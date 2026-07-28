@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">"Qix"</string>
+    <string name="main_activity_title">"Qix"</string>
+
+    <!-- Notification channels -->
+    <string name="channel_messages">Messages</string>
+    <string name="channel_service">Background connection</string>
+    <string name="service_running">Qix is watching for new messages</string>
+
+    <!--
+        Posted by QixNotificationService, which runs outside the WebView and so
+        cannot use the app's own i18n dictionary. Mirrors the wording the server
+        sends with Web Push (lib/server/push.ts).
+    -->
+    <string name="notification_new_message">New message</string>
+    <string name="notification_message_request">New message request</string>
+    <string name="notification_incoming_call">Incoming call</string>
+    <string name="notification_encrypted">Encrypted message</string>
+    <string name="notification_voice">Voice message</string>
+    <string name="notification_video">Video</string>
+    <string name="notification_photo">Photo</string>
+</resources>

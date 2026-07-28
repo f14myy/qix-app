@@ -1,0 +1,966 @@
+/* ==========================================================================
+   Appearance picker — look, wallpaper and bubble style cards.
+   ========================================================================== */
+
+
+.look-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+}
+
+
+.look-card {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 8px;
+	padding: 0;
+	border: 1px solid var(--hairline-strong);
+	border-radius: var(--radius);
+	background: var(--bg-elevated);
+	overflow: hidden;
+	cursor: pointer;
+	text-align: left;
+	color: inherit;
+	width: 100%;
+	min-width: 0;
+	appearance: none;
+	-webkit-appearance: none;
+	transition:
+		border-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft),
+		box-shadow var(--motion) var(--ease-soft);
+}
+
+
+.look-card:active {
+	transform: scale(0.98);
+}
+
+
+.look-card.active {
+	border-color: var(--accent);
+	box-shadow: 0 0 0 1px var(--accent);
+}
+
+
+.look-card-preview {
+	display: block;
+	width: 100%;
+	height: 88px;
+	position: relative;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+
+.look-card-topbar {
+	display: block;
+	width: 100%;
+	height: 18px;
+	background: color-mix(in srgb, var(--preview-elevated, #fff) 88%, var(--preview-accent, var(--accent)));
+	border-bottom: 1px solid color-mix(in srgb, var(--preview-border, #ccc) 70%, transparent);
+}
+
+
+.look-card-chat {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 10px 8px;
+	width: 100%;
+	height: calc(100% - 18px);
+	box-sizing: border-box;
+	background-color: var(--preview-chat, #cfdce6);
+	background-image: var(--chat-wallpaper-glow, none), var(--chat-wallpaper-pattern);
+	background-size: var(--chat-wallpaper-size, 100% 100%, 12px 12px);
+}
+
+
+.look-bubble {
+	display: block;
+	height: 14px;
+	border-radius: 8px;
+	max-width: 72%;
+}
+
+
+.look-bubble.them {
+	align-self: flex-start;
+	width: 58%;
+	background: var(--preview-them, #e8f2ef);
+}
+
+
+.look-bubble.me {
+	align-self: flex-end;
+	width: 48%;
+	background: var(--preview-me, #b4ddcf);
+}
+
+
+.look-card-label {
+	padding: 0 10px 10px;
+	font-size: 0.85rem;
+	font-weight: var(--fw-semi);
+	letter-spacing: -0.01em;
+}
+
+
+.wallpaper-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+}
+
+
+.wallpaper-card {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 8px;
+	padding: 0;
+	border: 1px solid var(--hairline-strong);
+	border-radius: var(--radius);
+	background: var(--bg-elevated);
+	overflow: hidden;
+	cursor: pointer;
+	color: inherit;
+	width: 100%;
+	min-width: 0;
+	appearance: none;
+	-webkit-appearance: none;
+	transition:
+		border-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft),
+		box-shadow var(--motion) var(--ease-soft);
+}
+
+
+.wallpaper-card:active {
+	transform: scale(0.98);
+}
+
+
+.wallpaper-card.active {
+	border-color: var(--accent);
+	box-shadow: 0 0 0 1px var(--accent);
+}
+
+
+.wallpaper-sample {
+	display: block;
+	width: 100%;
+	height: 72px;
+	background-color: var(--preview-chat, var(--bg-chat));
+	background-image: var(--chat-wallpaper-glow), var(--chat-wallpaper-pattern);
+	background-size: var(--chat-wallpaper-size);
+}
+
+
+.wallpaper-label {
+	padding: 0 10px 10px;
+	font-size: var(--fs-sm);
+	font-weight: 600;
+}
+
+
+/* Wallpaper picker cards still need local overrides when parent wallpaper differs */
+.wallpaper-card[data-wallpaper-preview] .wallpaper-sample {
+	background-color: var(--bg-chat);
+}
+
+
+.wallpaper-card[data-wallpaper-preview='dots'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		radial-gradient(circle at 1px 1px, var(--chat-dot) 1px, transparent 0);
+	background-size:
+		100% 100%,
+		14px 14px;
+}
+
+.wallpaper-card[data-wallpaper-preview='crosses'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		linear-gradient(var(--chat-dot) 1.5px, transparent 1.5px),
+		linear-gradient(90deg, var(--chat-dot) 1.5px, transparent 1.5px);
+	background-size:
+		100% 100%,
+		14px 14px,
+		14px 14px;
+	background-position:
+		0 0,
+		0 6px,
+		6px 0;
+}
+
+.wallpaper-card[data-wallpaper-preview='diagonals'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-linear-gradient(
+			-45deg,
+			transparent,
+			transparent 5px,
+			var(--chat-dot) 5px,
+			var(--chat-dot) 6px
+		);
+	background-size: 100% 100%, auto;
+}
+
+.wallpaper-card[data-wallpaper-preview='diamonds'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		linear-gradient(45deg, var(--chat-dot) 25%, transparent 25%),
+		linear-gradient(-45deg, var(--chat-dot) 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, var(--chat-dot) 75%),
+		linear-gradient(-45deg, transparent 75%, var(--chat-dot) 75%);
+	background-size:
+		100% 100%,
+		12px 12px,
+		12px 12px,
+		12px 12px,
+		12px 12px;
+	background-position:
+		0 0,
+		0 0,
+		0 6px,
+		6px -6px,
+		-6px 0;
+}
+
+.wallpaper-card[data-wallpaper-preview='ripples'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		radial-gradient(circle, transparent 40%, var(--chat-dot) 41%, var(--chat-dot) 44%, transparent 45%);
+	background-size:
+		100% 100%,
+		20px 20px;
+}
+
+.wallpaper-card[data-wallpaper-preview='grid'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		linear-gradient(var(--chat-dot) 1px, transparent 1px),
+		linear-gradient(90deg, var(--chat-dot) 1px, transparent 1px);
+	background-size:
+		100% 100%,
+		18px 18px,
+		18px 18px;
+}
+
+.wallpaper-card[data-wallpaper-preview='bloom'] .wallpaper-sample {
+	background-image:
+		radial-gradient(ellipse 60% 50% at 20% 30%, var(--chat-glow), transparent 55%),
+		radial-gradient(ellipse 50% 40% at 80% 70%, var(--chat-glow), transparent 50%),
+		radial-gradient(circle at 1px 1px, var(--chat-dot) 1px, transparent 0);
+	background-size:
+		100% 100%,
+		100% 100%,
+		14px 14px;
+}
+
+.wallpaper-card[data-wallpaper-preview='none'] .wallpaper-sample {
+	background-image: none;
+}
+
+
+.appearance-body {
+	padding-bottom: calc(28px + var(--safe-bottom));
+}
+
+
+.appearance-preview-section {
+	padding-bottom: 4px;
+}
+
+
+.appearance-live {
+	border-radius: var(--radius);
+	overflow: hidden;
+	border: 1px solid var(--hairline-strong);
+	background: var(--preview-elevated, var(--bg-elevated));
+	transition:
+		transform var(--motion) var(--ease-spring),
+		border-color var(--motion) var(--ease-soft);
+}
+
+
+.appearance-live.flash {
+	transform: scale(0.99);
+}
+
+
+.appearance-live-bar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px;
+	background: color-mix(in srgb, var(--preview-elevated, var(--bg-elevated)) 92%, transparent);
+	border-bottom: 1px solid color-mix(in srgb, var(--preview-border, var(--border)) 70%, transparent);
+}
+
+
+.appearance-live-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--accent);
+	flex-shrink: 0;
+}
+
+
+.appearance-live-title {
+	font-weight: var(--fw-semi);
+	font-size: var(--fs-sm);
+	letter-spacing: -0.01em;
+}
+
+
+.appearance-live-chat {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 14px 12px 16px;
+	min-height: 132px;
+	background-color: var(--preview-chat, var(--bg-chat));
+}
+
+
+.appearance-live-bubble {
+	max-width: 78%;
+	padding: 8px 11px;
+	border-radius: var(--radius);
+	font-size: var(--fs-sm);
+	line-height: 1.35;
+}
+
+
+.appearance-live-bubble.them {
+	align-self: flex-start;
+	background: var(--preview-them, var(--bg-bubble-them));
+	border-bottom-left-radius: 4px;
+	color: var(--text);
+}
+
+
+.appearance-live-bubble.me {
+	align-self: flex-end;
+	background: var(--preview-me, var(--bg-bubble-me));
+	border-bottom-right-radius: 4px;
+	color: var(--text);
+}
+
+
+.appearance-live-bubble.short {
+	max-width: 42%;
+}
+
+
+.appearance-live-meta {
+	display: flex;
+	gap: 6px;
+	padding: 8px 12px 10px;
+	font-size: var(--fs-xs);
+	font-weight: var(--fw-medium);
+	color: var(--text-muted);
+	background: var(--preview-elevated, var(--bg-elevated));
+	border-top: 1px solid color-mix(in srgb, var(--preview-border, var(--border)) 50%, transparent);
+}
+
+
+.appearance-tabs-wrap {
+	padding-top: 4px;
+	padding-bottom: 0;
+	position: sticky;
+	top: calc(var(--header-h) + var(--safe-top));
+	z-index: 5;
+	background: var(--surface-glass);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+}
+
+
+.appearance-tabs {
+	display: flex;
+	gap: 2px;
+	padding: 3px;
+	border-radius: var(--radius);
+	background: var(--surface-sunken);
+}
+
+
+.appearance-tab {
+	flex: 1;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	font-weight: var(--fw-medium);
+	font-size: var(--fs-sm);
+	min-height: 38px;
+	border-radius: calc(var(--radius) - 4px);
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+}
+
+
+.appearance-tab.active {
+	background: var(--bg-elevated);
+	color: var(--text);
+	font-weight: var(--fw-semi);
+	box-shadow: var(--elev-1);
+}
+
+
+.appearance-tab:active {
+	transform: scale(0.98);
+}
+
+
+.look-rail,
+.wallpaper-rail {
+	display: flex;
+	gap: 12px;
+	overflow-x: auto;
+	padding: 4px 2px 12px;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+}
+
+
+.look-rail::-webkit-scrollbar,
+.wallpaper-rail::-webkit-scrollbar {
+	display: none;
+}
+
+
+.look-card-rail,
+.wallpaper-card-rail {
+	flex: 0 0 148px;
+	scroll-snap-align: start;
+	width: 148px;
+	min-width: 148px;
+	max-width: 148px;
+}
+
+
+.look-card-rail .look-card-preview {
+	height: 110px;
+	width: 100%;
+}
+
+
+.wallpaper-card-rail .wallpaper-sample {
+	height: 96px;
+	width: 100%;
+	position: relative;
+}
+
+
+.look-check {
+	position: absolute;
+	right: 8px;
+	bottom: 8px;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: var(--accent);
+	color: #fff;
+	display: grid;
+	place-items: center;
+	animation: chip-pop var(--motion) var(--ease-spring) both;
+}
+
+
+.look-swatch {
+	display: block;
+	height: 4px;
+	width: 100%;
+	margin-top: -4px;
+}
+
+
+.look-card-rail .look-card-label,
+.wallpaper-card-rail .wallpaper-label {
+	padding-top: 4px;
+}
+
+
+/* Preview surfaces pick current wallpaper */
+.appearance-live-chat {
+	background-image: inherit;
+}
+
+.appearance-live[data-bubble-preview='soft'] .appearance-live-bubble { border-radius: 18px; }
+
+.appearance-live[data-bubble-preview='soft'] .appearance-live-bubble.them { border-bottom-left-radius: 6px; }
+
+.appearance-live[data-bubble-preview='soft'] .appearance-live-bubble.me { border-bottom-right-radius: 6px; }
+
+.appearance-live[data-bubble-preview='pill'] .appearance-live-bubble { border-radius: 999px; }
+
+.appearance-live[data-bubble-preview='sharp'] .appearance-live-bubble { border-radius: 8px; }
+
+.appearance-live[data-bubble-preview='sharp'] .appearance-live-bubble.them { border-bottom-left-radius: 2px; }
+
+.appearance-live[data-bubble-preview='sharp'] .appearance-live-bubble.me { border-bottom-right-radius: 2px; }
+
+
+/* Dark-mode look previews — match the real dark look tokens. */
+html[data-theme='dark'] [data-look-preview] {
+	--chat-wallpaper-glow: radial-gradient(ellipse 80% 50% at 50% 0%, var(--chat-glow), transparent 70%);
+	color: #e8eef2;
+}
+
+html[data-theme='dark'] [data-look-preview] .look-card-label,
+html[data-theme='dark'] [data-look-preview] .wallpaper-label,
+html[data-theme='dark'] [data-look-preview] .bubble-style-label,
+html[data-theme='dark'] [data-look-preview] .appearance-live-title,
+html[data-theme='dark'] [data-look-preview] .appearance-live-meta,
+html[data-theme='dark'] [data-look-preview] .appearance-live-bubble {
+	color: inherit;
+}
+
+html[data-theme='dark'] [data-look-preview] .appearance-live-meta {
+	color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+html[data-theme='dark'] [data-look-preview] .look-card-topbar,
+html[data-theme='dark'] [data-look-preview] .appearance-live-bar,
+html[data-theme='dark'] [data-look-preview] .appearance-live-meta {
+	background: color-mix(in srgb, var(--preview-elevated) 92%, transparent);
+	border-color: color-mix(in srgb, var(--preview-border) 80%, transparent);
+}
+
+
+html[data-theme='dark'] [data-look-preview='qix'] {
+	--preview-chat: #0b1218;
+	--preview-me: #1a564c;
+	--preview-them: #152028;
+	--preview-elevated: #121a20;
+	--preview-border: #243038;
+	--preview-accent: #3dbaa8;
+	--accent: #3dbaa8;
+	--chat-dot: rgba(255, 255, 255, 0.08);
+	--chat-glow: rgba(61, 186, 168, 0.14);
+}
+
+html[data-theme='dark'] [data-look-preview='lagoon'] {
+	--preview-chat: #0a1016;
+	--preview-me: #1a4560;
+	--preview-them: #121c28;
+	--preview-elevated: #101820;
+	--preview-border: #243040;
+	--preview-accent: #4aa8d0;
+	--accent: #4aa8d0;
+	--chat-dot: rgba(255, 255, 255, 0.08);
+	--chat-glow: rgba(74, 168, 208, 0.14);
+}
+
+html[data-theme='dark'] [data-look-preview='meadow'] {
+	--preview-chat: #0c120c;
+	--preview-me: #2a4a28;
+	--preview-them: #141c14;
+	--preview-elevated: #121a12;
+	--preview-border: #283428;
+	--preview-accent: #7aba6a;
+	--accent: #7aba6a;
+	--chat-dot: rgba(220, 255, 200, 0.07);
+	--chat-glow: rgba(122, 186, 106, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='ember'] {
+	--preview-chat: #120e0a;
+	--preview-me: #5a3a18;
+	--preview-them: #1c1610;
+	--preview-elevated: #1a1410;
+	--preview-border: #34281c;
+	--preview-accent: #e0a050;
+	--accent: #e0a050;
+	--chat-dot: rgba(255, 210, 150, 0.07);
+	--chat-glow: rgba(224, 160, 80, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='graphite'] {
+	--preview-chat: #0c1014;
+	--preview-me: #2a3848;
+	--preview-them: #141a20;
+	--preview-elevated: #12161c;
+	--preview-border: #2a343e;
+	--preview-accent: #8aa0b4;
+	--accent: #8aa0b4;
+	--chat-dot: rgba(255, 255, 255, 0.07);
+	--chat-glow: rgba(138, 160, 180, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='ink'] {
+	--preview-chat: #0a0a0c;
+	--preview-me: #2e2e3a;
+	--preview-them: #121218;
+	--preview-elevated: #141418;
+	--preview-border: #2a2a34;
+	--preview-accent: #c8c8d8;
+	--accent: #c8c8d8;
+	--chat-dot: rgba(255, 255, 255, 0.09);
+	--chat-glow: rgba(200, 200, 216, 0.1);
+	color: #e8e8f0;
+}
+
+html[data-theme='dark'] [data-look-preview='dusk'] {
+	--preview-chat: #100e16;
+	--preview-me: #3a2e55;
+	--preview-them: #1a1624;
+	--preview-elevated: #16121e;
+	--preview-border: #2e2840;
+	--preview-accent: #b09ad8;
+	--accent: #b09ad8;
+	--chat-dot: rgba(230, 210, 255, 0.07);
+	--chat-glow: rgba(176, 154, 216, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='coral'] {
+	--preview-chat: #140c0c;
+	--preview-me: #5a3028;
+	--preview-them: #241616;
+	--preview-elevated: #1c1212;
+	--preview-border: #3a2824;
+	--preview-accent: #e88878;
+	--accent: #e88878;
+	--chat-dot: rgba(255, 200, 190, 0.07);
+	--chat-glow: rgba(232, 136, 120, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='frost'] {
+	--preview-chat: #0a1014;
+	--preview-me: #2a4558;
+	--preview-them: #152028;
+	--preview-elevated: #101820;
+	--preview-border: #243440;
+	--preview-accent: #7eb0c8;
+	--accent: #7eb0c8;
+	--chat-dot: rgba(255, 255, 255, 0.07);
+	--chat-glow: rgba(126, 176, 200, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='sand'] {
+	--preview-chat: #12100c;
+	--preview-me: #4a3c28;
+	--preview-them: #221c14;
+	--preview-elevated: #1a1610;
+	--preview-border: #3a3226;
+	--preview-accent: #c4a878;
+	--accent: #c4a878;
+	--chat-dot: rgba(255, 230, 190, 0.07);
+	--chat-glow: rgba(196, 168, 120, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='noir'] {
+	--preview-chat: #080808;
+	--preview-me: #2a2a2a;
+	--preview-them: #121212;
+	--preview-elevated: #101010;
+	--preview-border: #242424;
+	--preview-accent: #f0f0f0;
+	--accent: #f0f0f0;
+	--chat-dot: rgba(255, 255, 255, 0.1);
+	--chat-glow: rgba(255, 255, 255, 0.08);
+	color: #f2f2f2;
+}
+
+html[data-theme='dark'] [data-look-preview='rose'] {
+	--preview-chat: #140a10;
+	--preview-me: #5a2838;
+	--preview-them: #241018;
+	--preview-elevated: #1c1016;
+	--preview-border: #3a2030;
+	--preview-accent: #e090a8;
+	--accent: #e090a8;
+	--chat-dot: rgba(255, 200, 220, 0.07);
+	--chat-glow: rgba(224, 144, 168, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='citrus'] {
+	--preview-chat: #101208;
+	--preview-me: #4a5820;
+	--preview-them: #1c2010;
+	--preview-elevated: #181c0e;
+	--preview-border: #343c20;
+	--preview-accent: #c0d050;
+	--accent: #c0d050;
+	--chat-dot: rgba(230, 255, 140, 0.07);
+	--chat-glow: rgba(192, 208, 80, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='arctic'] {
+	--preview-chat: #0a1216;
+	--preview-me: #2a5560;
+	--preview-them: #142028;
+	--preview-elevated: #101a20;
+	--preview-border: #243840;
+	--preview-accent: #7eb8c8;
+	--accent: #7eb8c8;
+	--chat-dot: rgba(200, 240, 255, 0.07);
+	--chat-glow: rgba(126, 184, 200, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='plum'] {
+	--preview-chat: #120810;
+	--preview-me: #4a2038;
+	--preview-them: #1e1018;
+	--preview-elevated: #1a1018;
+	--preview-border: #382030;
+	--preview-accent: #d090b0;
+	--accent: #d090b0;
+	--chat-dot: rgba(255, 200, 230, 0.07);
+	--chat-glow: rgba(208, 144, 176, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='volt'] {
+	--preview-chat: #06120c;
+	--preview-me: #1a6040;
+	--preview-them: #0e2018;
+	--preview-elevated: #0c1c14;
+	--preview-border: #1e3c2c;
+	--preview-accent: #4ed898;
+	--accent: #4ed898;
+	--chat-dot: rgba(180, 255, 220, 0.07);
+	--chat-glow: rgba(78, 216, 152, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='clay'] {
+	--preview-chat: #140e0a;
+	--preview-me: #5a3a28;
+	--preview-them: #221810;
+	--preview-elevated: #1c1610;
+	--preview-border: #3a2c20;
+	--preview-accent: #d4a080;
+	--accent: #d4a080;
+	--chat-dot: rgba(255, 220, 190, 0.07);
+	--chat-glow: rgba(212, 160, 128, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='midnight'] {
+	--preview-chat: #080a14;
+	--preview-me: #283868;
+	--preview-them: #12182c;
+	--preview-elevated: #101428;
+	--preview-border: #222c48;
+	--preview-accent: #8098e0;
+	--accent: #8098e0;
+	--chat-dot: rgba(200, 220, 255, 0.07);
+	--chat-glow: rgba(128, 152, 224, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='matcha'] {
+	--preview-chat: #0a1208;
+	--preview-me: #355828;
+	--preview-them: #142010;
+	--preview-elevated: #121c10;
+	--preview-border: #2a3c24;
+	--preview-accent: #90c870;
+	--accent: #90c870;
+	--chat-dot: rgba(210, 255, 180, 0.07);
+	--chat-glow: rgba(144, 200, 112, 0.12);
+}
+
+html[data-theme='dark'] [data-look-preview='berry'] {
+	--preview-chat: #14080c;
+	--preview-me: #5a2038;
+	--preview-them: #220e16;
+	--preview-elevated: #1c1014;
+	--preview-border: #3c1e2c;
+	--preview-accent: #e878a0;
+	--accent: #e878a0;
+	--chat-dot: rgba(255, 200, 220, 0.07);
+	--chat-glow: rgba(232, 120, 160, 0.12);
+}
+
+
+/* Light-mode ink and noir stay dark; keep card labels legible. */
+html[data-theme='light'] [data-look-preview='ink'],
+html[data-theme='light'] [data-look-preview='noir'] {
+	color: #e8e8f0;
+}
+
+html[data-theme='light'] [data-look-preview='ink'] .look-card-label,
+html[data-theme='light'] [data-look-preview='noir'] .look-card-label {
+	color: var(--text);
+}
+
+
+/* ==========================================================================
+   Motion
+   --------------------------------------------------------------------------
+   This is the screen people come to in order to try things on, so it gets the
+   most attention: swatches cascade in, selection lands with a spring, and the
+   live preview reacts to every change. The palette itself cross-fades — that
+   part lives in motion.css, driven by lib/theme.ts.
+   ========================================================================== */
+
+/* ── Grids ──────────────────────────────────────────────────────────────────
+   Two columns of cards reading as one wave. The delay ladder is short so the
+   whole grid has settled before a thumb can reach it. */
+.look-card,
+.wallpaper-card {
+	animation: pop-rise var(--motion-slow) var(--ease-spring) backwards;
+	transition:
+		transform var(--motion) var(--ease-spring),
+		border-color var(--motion) var(--ease-soft),
+		box-shadow var(--motion) var(--ease-soft);
+}
+
+.look-grid > *:nth-child(2),
+.wallpaper-grid > *:nth-child(2) {
+	animation-delay: 30ms;
+}
+.look-grid > *:nth-child(3),
+.wallpaper-grid > *:nth-child(3) {
+	animation-delay: 60ms;
+}
+.look-grid > *:nth-child(4),
+.wallpaper-grid > *:nth-child(4) {
+	animation-delay: 90ms;
+}
+.look-grid > *:nth-child(5),
+.wallpaper-grid > *:nth-child(5) {
+	animation-delay: 120ms;
+}
+.look-grid > *:nth-child(6),
+.wallpaper-grid > *:nth-child(6) {
+	animation-delay: 150ms;
+}
+.look-grid > *:nth-child(7),
+.wallpaper-grid > *:nth-child(7) {
+	animation-delay: 180ms;
+}
+.look-grid > *:nth-child(8),
+.wallpaper-grid > *:nth-child(8) {
+	animation-delay: 210ms;
+}
+.look-grid > *:nth-child(n + 9),
+.wallpaper-grid > *:nth-child(n + 9) {
+	animation-delay: 240ms;
+}
+
+.look-card:active,
+.wallpaper-card:active {
+	transform: scale(0.95);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.look-card:hover,
+	.wallpaper-card:hover {
+		transform: translate3d(0, -2px, 0);
+	}
+}
+
+/* The checkmark is the confirmation, so it gets the overshoot. */
+.look-check {
+	animation: pop-in var(--motion-slow) var(--ease-bounce) both;
+}
+
+/* Miniature chrome inside each card, so a card previews motion too. */
+.look-card-preview,
+.wallpaper-sample {
+	transition: transform var(--motion-slow) var(--ease-out);
+}
+
+.look-card:active .look-card-preview,
+.wallpaper-card:active .wallpaper-sample {
+	transform: scale(1.04);
+}
+
+.look-swatch {
+	transition: transform var(--motion) var(--ease-spring);
+}
+
+.look-card:active .look-swatch {
+	transform: scale(1.12);
+}
+
+
+/* ── Tabs ───────────────────────────────────────────────────────────────────*/
+.appearance-tab {
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-out);
+}
+
+.appearance-tab:active {
+	transform: scale(0.96);
+}
+
+
+/* ── Live preview ───────────────────────────────────────────────────────────
+   Sits above the pickers and shows the result. Its bubbles re-enter whenever
+   the section is re-rendered, which is what makes a change feel applied. */
+.appearance-live {
+	animation: rise-in var(--motion-enter) var(--ease-out) both;
+}
+
+.appearance-live-bubble {
+	animation: pop-rise var(--motion-slow) var(--ease-spring) both;
+}
+
+.appearance-live-bubble:nth-of-type(2) {
+	animation-delay: 70ms;
+}
+.appearance-live-bubble:nth-of-type(3) {
+	animation-delay: 140ms;
+}
+
+/* A slow breath, so the preview reads as live rather than as a screenshot. */
+.appearance-live-dot {
+	animation: breathe 2.4s var(--ease-soft) infinite;
+}
+
+.appearance-live-chat,
+.appearance-live-bar {
+	transition:
+		background-color var(--motion-slow) var(--ease-soft),
+		border-color var(--motion-slow) var(--ease-soft);
+}
+
+/* ── Appearance in motion, second pass ───────────────────────────────────── */
+
+.look-card-label,
+.wallpaper-label {
+	animation: fade-in var(--motion-slower) 120ms var(--ease-soft) backwards;
+}
+
+/*
+ * The colour bar under a look swells when you reach for it. `:not(:active)`
+ * keeps the press feedback below from being outranked on a hovering pointer.
+ */
+@media (hover: hover) and (pointer: fine) {
+	.look-card:hover:not(:active) .look-swatch {
+		transform: scaleY(1.8);
+	}
+}
+
+/* Section tabs unroll, and the chosen one acknowledges the tap. */
+.appearance-tabs {
+	transform-origin: top center;
+	animation: unfurl var(--motion) var(--ease-out) backwards;
+}
+.appearance-tab {
+	--stagger: 30ms;
+	animation: fade-in var(--motion) var(--ease-soft) backwards;
+}
+.appearance-tab:nth-child(2) {
+	animation-delay: var(--stagger);
+}
+.appearance-tab:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.appearance-tab:nth-child(n + 4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+.appearance-tab.active {
+	animation: pop-in var(--motion) var(--ease-spring);
+}

@@ -1,0 +1,1172 @@
+/* ==========================================================================
+   App chrome — top bar, icon buttons, tab bar / desktop rail, FAB, action
+   sheets and the hit-slop helper.
+   ========================================================================== */
+
+
+.brand-animate {
+	animation: brand-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+@keyframes brand-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+
+@keyframes title-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+
+@keyframes banner-slide {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+
+/* ── Top bar ────────────────────────────────────────────────────────────────
+   Opaque, hairline-separated, no shadow. Height is the only thing dividing
+   chrome from content. */
+.topbar {
+	--topbar-pad-x: 10px;
+	height: calc(var(--header-h) + var(--safe-top));
+	/* Side insets are 0 in portrait and on the web; they only matter in
+	   landscape on a phone with a cutout or side gesture area. */
+	padding: var(--safe-top) calc(var(--topbar-pad-x) + var(--safe-right)) 0
+		calc(var(--topbar-pad-x) + var(--safe-left));
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	background: var(--surface-glass);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border-bottom: 1px solid var(--hairline);
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	flex-shrink: 0;
+	transition: background-color var(--motion) var(--ease-soft);
+}
+
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	.topbar {
+		background: var(--bg-elevated);
+	}
+}
+
+
+.topbar h1 {
+	margin: 0;
+	font-size: var(--fs-lg);
+	font-weight: var(--fw-semi);
+	flex: 1;
+	padding-left: 6px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	letter-spacing: var(--track-tight);
+}
+
+
+.topbar-spacer {
+	flex: 1;
+	min-width: 0;
+}
+
+
+.brand {
+	font-family: var(--font-brand);
+	font-weight: 800;
+	letter-spacing: -0.045em;
+	color: var(--text);
+	font-size: 1.4rem;
+	padding-left: 6px;
+	transition: color var(--motion) ease;
+	flex: 1;
+}
+
+
+/* The single accent mark in the chrome — a dot after the wordmark. */
+.brand::after {
+	content: '';
+	display: inline-block;
+	width: 5px;
+	height: 5px;
+	margin-left: 3px;
+	border-radius: 50%;
+	background: var(--accent);
+	vertical-align: 0.28em;
+}
+
+
+/* ── Icon buttons ───────────────────────────────────────────────────────────
+   Ghost by default: the glyph is the button. Fill appears only on press. */
+.icon-btn {
+	width: 42px;
+	height: 42px;
+	border: none;
+	border-radius: var(--radius-sm);
+	background: transparent;
+	color: var(--text);
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft),
+		color var(--motion) var(--ease-soft);
+}
+
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+	background: var(--surface-hover);
+}
+
+
+.icon-btn:active,
+.pressable:active,
+.chat-row:active,
+.user-row:active,
+.btn:active,
+.composer .send:active {
+	transform: scale(0.96);
+}
+
+
+.icon-btn:active {
+	background: var(--surface-press);
+}
+
+.icon-btn.danger {
+	color: var(--danger);
+}
+
+.icon-btn.danger:hover,
+.icon-btn.danger:focus-visible {
+	background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.icon-btn:disabled {
+	opacity: 0.4;
+	pointer-events: none;
+}
+
+
+/* .icon-btn-glass is styled with .topbar-over-media .icon-btn further down —
+   both sit on photography and share one treatment. */
+
+/* Compact dismiss buttons inside composer banners and attachment chips. */
+.banner-dismiss {
+	position: relative;
+	width: 32px;
+	height: 32px;
+	border-radius: 10px;
+}
+
+
+.chip-dismiss {
+	width: 22px;
+	height: 22px;
+	border-radius: 8px;
+	background: transparent;
+}
+
+
+/* Invisible spacer that balances a topbar back button so the title stays centred. */
+.topbar-ghost {
+	width: 42px;
+	height: 42px;
+	flex-shrink: 0;
+}
+
+
+/*
+ * Hit slop: controls that must stay visually small still need a 44px tap area.
+ * The pseudo-element grows the target without touching layout or paint.
+ */
+.select-check,
+.pin-banner-clear,
+.theme-pill,
+.rec-cancel,
+.rec-send,
+.voice-btn,
+.accent-swatch,
+.app-toast-x,
+.install-dismiss,
+.coach-tip-action,
+.profile-edit-pill,
+.profile-remove-avatar {
+	position: relative;
+}
+
+
+.select-check::after,
+.pin-banner-clear::after,
+.theme-pill::after,
+.rec-cancel::after,
+.rec-send::after,
+.voice-btn::after,
+.accent-swatch::after,
+.app-toast-x::after,
+.install-dismiss::after,
+.coach-tip-action::after,
+.profile-edit-pill::after,
+.profile-remove-avatar::after,
+.pending-remove::after,
+.profile-avatar-cam::after,
+.list-filter-clear::after,
+.jump-unread::after,
+.banner-dismiss::after,
+.switch::before {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: max(100%, 44px);
+	height: max(100%, 44px);
+	transform: translate(-50%, -50%);
+	border-radius: inherit;
+}
+
+
+.select-check::after,
+.pending-remove::after {
+	width: max(100%, 36px);
+	height: max(100%, 36px);
+}
+
+
+.topbar-over-media {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	background: transparent;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	/* Floats over a banner — no divider, or it draws a line across the artwork. */
+	border-bottom-color: transparent;
+	box-shadow: none;
+	z-index: 30;
+}
+
+
+.topbar-over-media .icon-btn,
+.icon-btn-glass {
+	background: rgba(0, 0, 0, 0.3) !important;
+	backdrop-filter: blur(20px) !important;
+	-webkit-backdrop-filter: blur(20px) !important;
+	border: none !important;
+	color: #ffffff !important;
+	box-shadow: none !important;
+	border-radius: 50% !important;
+	transition:
+		transform var(--motion-fast) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft) !important;
+}
+
+
+.topbar-over-media .icon-btn:hover,
+.icon-btn-glass:hover {
+	background: rgba(0, 0, 0, 0.44) !important;
+}
+
+
+.topbar-over-media .icon-btn:active,
+.icon-btn-glass:active {
+	transform: scale(0.94) !important;
+}
+
+
+/* Bottom tab bar — primary destinations inside the thumb zone.
+   Becomes a permanent side rail on desktop (see desktop section). */
+.tabbar {
+	flex-shrink: 0;
+	display: flex;
+	align-items: stretch;
+	gap: 2px;
+	padding: 6px calc(6px + var(--safe-right)) var(--safe-bottom) calc(6px + var(--safe-left));
+	background: var(--surface-glass);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border-top: 1px solid var(--hairline);
+	position: sticky;
+	bottom: 0;
+	z-index: 30;
+}
+
+
+/* Mounted on non-top-level routes only so the desktop rail never disappears. */
+.tabbar.is-secondary {
+	display: none;
+}
+
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	.tabbar {
+		background: var(--bg-elevated);
+	}
+}
+
+
+.tab {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+	min-height: 50px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	border-radius: var(--radius-sm);
+	color: var(--text-muted);
+	transition:
+		color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+}
+
+
+/* Active marker: a hairline rule riding the tab bar's top edge, not a pill. */
+.tab::before {
+	content: '';
+	position: absolute;
+	top: -7px;
+	left: 50%;
+	width: 20px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--accent);
+	transform: translateX(-50%) scaleX(0);
+	transition: transform var(--motion-slow) var(--ease-out);
+}
+
+
+.tab.active::before {
+	transform: translateX(-50%) scaleX(1);
+}
+
+
+.tab:active {
+	transform: scale(0.95);
+}
+
+
+.tab.active {
+	color: var(--accent);
+}
+
+
+.tab-ico {
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 24px;
+}
+
+
+.tab-label {
+	font-size: 0.66rem;
+	font-weight: var(--fw-medium);
+	letter-spacing: 0;
+	line-height: 1;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+
+.tab.active .tab-label {
+	font-weight: var(--fw-semi);
+}
+
+
+.tab-badge {
+	position: absolute;
+	top: -3px;
+	right: 0;
+	min-width: 16px;
+	height: 16px;
+	padding: 0 5px;
+	border-radius: var(--radius-pill);
+	background: var(--badge);
+	color: #fff;
+	font-size: 0.6rem;
+	font-weight: var(--fw-bold);
+	line-height: 16px;
+	text-align: center;
+	box-shadow: 0 0 0 2px var(--bg-elevated);
+	animation: badge-pop var(--motion-slow) var(--ease-spring) both;
+}
+
+
+/* Floating compose button — the only way to start a chat without reaching the
+   top. Anchored to the screen, not the viewport, so it stays inside the app
+   shell on tablet and desktop widths. */
+.fab {
+	position: absolute;
+	right: 16px;
+	bottom: 16px;
+	width: 52px;
+	height: 52px;
+	border: none;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	background: var(--accent);
+	color: #fff;
+	z-index: 100;
+	box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 30%, transparent);
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+	animation: fab-in var(--motion-slow) var(--ease-out) backwards;
+}
+
+
+.fab:hover,
+.fab:focus-visible {
+	background: var(--accent-hover);
+}
+
+
+.fab:active {
+	transform: scale(0.92);
+}
+
+
+@keyframes fab-in {
+	from {
+		opacity: 0;
+		transform: scale(0.85);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+.chat-menu-portal .menu-backdrop {
+	z-index: 200;
+	background: var(--scrim);
+}
+
+
+.chat-menu-portal .msg-sheet {
+	z-index: 201;
+	bottom: calc(20px + var(--safe-bottom));
+	width: min(340px, calc(100% - 28px));
+}
+
+
+.app-version {
+	flex-shrink: 0;
+	margin: 0;
+	padding: 8px 16px calc(10px + var(--safe-bottom));
+	text-align: center;
+	font-size: 0.68rem;
+	letter-spacing: 0.04em;
+	color: color-mix(in srgb, var(--text-muted) 55%, transparent);
+	background: transparent;
+	user-select: none;
+	pointer-events: none;
+}
+
+
+.pad-sheet {
+	padding: 18px;
+	gap: 10px;
+}
+
+
+.sheet-title {
+	margin: 0;
+	font-size: var(--fs-lg);
+	font-weight: var(--fw-semi);
+	letter-spacing: var(--track-tight);
+	text-align: center;
+}
+
+
+.sheet-desc {
+	margin: 0 0 6px;
+	font-size: var(--fs-sm);
+	color: var(--text-muted);
+	text-align: center;
+}
+
+
+.sheet-section {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	padding: 12px 16px 4px;
+	font-size: var(--fs-xs);
+	font-weight: var(--fw-semi);
+	color: color-mix(in srgb, var(--text-muted) 80%, transparent);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+
+.sheet-row-ico {
+	display: inline-grid;
+	place-items: center;
+	margin-right: 8px;
+	vertical-align: middle;
+	flex-shrink: 0;
+	opacity: 0.78;
+}
+
+
+.msg-menu button {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	min-height: 48px;
+	border: none;
+	background: transparent;
+	text-align: left;
+	padding: 12px 16px;
+	color: var(--text);
+	border-bottom: 1px solid var(--hairline);
+	font: inherit;
+	font-size: var(--fs-md);
+	font-weight: var(--fw-medium);
+	cursor: pointer;
+	transition:
+		background-color var(--motion-fast) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft),
+		color var(--motion) var(--ease-soft);
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
+
+
+.msg-menu button .sheet-row-ico {
+	margin-right: 0;
+}
+
+
+.msg-menu button svg {
+	flex-shrink: 0;
+}
+
+
+.msg-menu button:hover {
+	background: var(--surface-hover);
+}
+
+
+.msg-menu button:active {
+	transform: scale(0.99);
+	background: var(--surface-press);
+}
+
+
+.msg-menu button:disabled {
+	opacity: 0.55;
+	pointer-events: none;
+}
+
+
+.msg-menu button:last-child {
+	border-bottom: none;
+}
+
+
+.msg-menu button.danger {
+	color: var(--danger);
+}
+
+
+.msg-menu button.danger .sheet-row-ico {
+	opacity: 0.95;
+}
+
+
+.msg-menu button.active {
+	color: var(--accent);
+	font-weight: 600;
+}
+
+
+.topbar-actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+
+.topbar-actions .icon-btn {
+	position: relative;
+}
+
+
+.menu-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 250;
+	background: var(--scrim);
+	animation: backdrop-in var(--motion) var(--ease-soft) both;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
+
+
+@keyframes backdrop-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+
+.msg-sheet {
+	position: fixed;
+	left: 50%;
+	bottom: calc(84px + var(--safe-bottom));
+	transform: translateX(-50%);
+	z-index: 300;
+	width: min(340px, calc(100% - 32px));
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	animation: sheet-up var(--motion-slow) var(--ease-out) both;
+	pointer-events: auto;
+}
+
+
+.react-bar {
+	display: flex;
+	justify-content: space-around;
+	gap: 4px;
+	padding: 8px 10px;
+	background: var(--bg-elevated);
+	border: 1px solid var(--hairline);
+	border-radius: var(--radius-pill);
+	box-shadow: var(--elev-3);
+}
+
+
+.react-bar button {
+	border: none;
+	background: transparent;
+	font-size: 1.4rem;
+	padding: 4px 6px;
+	border-radius: var(--radius-sm);
+	transition: transform var(--motion-fast) var(--ease-spring);
+}
+
+
+.react-bar button:hover {
+	transform: scale(1.12);
+}
+
+
+.react-bar button:active {
+	transform: scale(1.18);
+}
+
+
+.msg-menu {
+	background: var(--bg-elevated);
+	border: 1px solid var(--hairline);
+	border-radius: var(--radius);
+	box-shadow: var(--elev-3);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+
+@keyframes sheet-up {
+	from {
+		opacity: 0;
+		transform: translateX(-50%) translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0);
+	}
+}
+
+
+.msg-confirm-text {
+	margin: 0;
+	padding: 14px 16px 6px;
+	font-size: 0.92rem;
+	color: var(--text-muted);
+}
+
+
+.topbar-transparent {
+	background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom-color: color-mix(in srgb, var(--border) 45%, transparent);
+}
+
+
+/* ==========================================================================
+   Motion
+   --------------------------------------------------------------------------
+   Chrome is on screen constantly, so it gets the least movement of anything:
+   only what confirms a tap. Entrances belong to the content, not the frame.
+   ========================================================================== */
+
+/* ── Tab bar ────────────────────────────────────────────────────────────────
+   The icon carries the selection, so it is what moves. The label only shifts
+   weight, which reads at a glance without drawing the eye. */
+.tab-ico {
+	transition:
+		transform var(--motion-slow) var(--ease-spring),
+		color var(--motion) var(--ease-soft);
+}
+
+.tab:active .tab-ico {
+	transform: scale(0.88);
+}
+
+.tab.active .tab-ico {
+	transform: translate3d(0, -1px, 0) scale(1.06);
+}
+
+.tab-label {
+	transition:
+		color var(--motion) var(--ease-soft),
+		opacity var(--motion) var(--ease-soft);
+}
+
+.tabbar {
+	transition:
+		background-color var(--motion-slow) var(--ease-soft),
+		border-color var(--motion-slow) var(--ease-soft);
+}
+
+
+/* ── Top bar ────────────────────────────────────────────────────────────────*/
+.topbar {
+	transition:
+		background-color var(--motion-slow) var(--ease-soft),
+		border-color var(--motion-slow) var(--ease-soft),
+		box-shadow var(--motion-slow) var(--ease-soft);
+}
+
+.icon-btn,
+.icon-btn-glass {
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-spring);
+}
+
+.icon-btn:not(:disabled):active,
+.icon-btn-glass:not(:disabled):active {
+	transform: scale(0.88);
+}
+
+
+/* ── Sheets ─────────────────────────────────────────────────────────────────
+   The container already rises in. Its rows follow, so a menu reads as a list
+   being dealt rather than a block appearing. */
+.msg-menu > button {
+	animation: rise-in var(--motion) var(--ease-out) both;
+	transition: background-color var(--motion-fast) var(--ease-soft);
+}
+
+.msg-menu > button:nth-child(2) {
+	animation-delay: 24ms;
+}
+.msg-menu > button:nth-child(3) {
+	animation-delay: 48ms;
+}
+.msg-menu > button:nth-child(4) {
+	animation-delay: 72ms;
+}
+.msg-menu > button:nth-child(5) {
+	animation-delay: 96ms;
+}
+.msg-menu > button:nth-child(n + 6) {
+	animation-delay: 120ms;
+}
+
+.sheet-row-ico {
+	transition: transform var(--motion) var(--ease-spring);
+}
+
+.msg-menu > button:active .sheet-row-ico {
+	transform: scale(1.14);
+}
+
+
+/* ── Floating action button ─────────────────────────────────────────────────*/
+.fab {
+	transition:
+		transform var(--motion) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft),
+		box-shadow var(--motion-slow) var(--ease-soft);
+}
+
+.fab:active {
+	transform: scale(0.9);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.fab:hover {
+		transform: translate3d(0, -2px, 0);
+	}
+}
+
+
+/* ── Small dismissables ─────────────────────────────────────────────────────*/
+.banner-dismiss,
+.chip-dismiss,
+.install-dismiss,
+.app-toast-x,
+.pin-banner-clear {
+	transition:
+		opacity var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-spring);
+}
+
+.banner-dismiss:active,
+.chip-dismiss:active,
+.install-dismiss:active,
+.app-toast-x:active,
+.pin-banner-clear:active {
+	transform: scale(0.85);
+}
+
+/* The unread count is a live number — it should land, not appear. */
+.tab-badge {
+	transition: transform var(--motion) var(--ease-bounce);
+}
+
+
+/* ==========================================================================
+   Chrome in motion, second pass
+   --------------------------------------------------------------------------
+   The section above deliberately kept the frame still. That was right while
+   the frame was a bar and a row of tabs on a phone; on a full-window desktop
+   build the chrome is a third of what is on screen, and a static frame around
+   animated content reads as a picture the app was drawn inside.
+
+   So the frame now arrives too — but it arrives *first* and it arrives once.
+   Nothing here loops, and nothing here moves after the screen has settled
+   except in answer to a press.
+   ========================================================================== */
+
+
+/* ── Top bar ────────────────────────────────────────────────────────────── */
+
+/*
+ * The bar settles down onto the screen, and the title follows a beat later.
+ * `title-in` has been sitting at the top of this file unused since the bar was
+ * written — this is what it was for.
+ */
+.topbar {
+	animation: drop-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+.topbar h1 {
+	animation: title-in var(--motion-enter) calc(var(--stagger) * 2) var(--ease-out) both;
+}
+
+
+/*
+ * Actions cascade in from the trailing edge — the direction the eye is already
+ * travelling once it has read the title.
+ *
+ * `backwards`, not `both`, and the same everywhere below that an element also
+ * has a press transform. A filled-forwards animation keeps ownership of every
+ * property it touched for as long as the element lives, so `both` here would
+ * silently disable `.icon-btn:active { transform: scale(0.88) }`. `backwards`
+ * still holds the first frame through the stagger delay — which is the only
+ * reason the fill was there — and hands the transform back at the end.
+ */
+.topbar > .icon-btn,
+.topbar-actions > * {
+	animation: scale-in var(--motion) var(--ease-spring) backwards;
+}
+
+
+.topbar-actions > *:nth-child(1) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+
+
+.topbar-actions > *:nth-child(2) {
+	animation-delay: calc(var(--stagger) * 4);
+}
+
+
+.topbar-actions > *:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 5);
+}
+
+
+.topbar-actions > *:nth-child(n + 4) {
+	animation-delay: calc(var(--stagger) * 6);
+}
+
+
+/* ── Tab bar ────────────────────────────────────────────────────────────── */
+
+/*
+ * The bar fades and the tabs rise. Not both moving: a translate on the bar
+ * compounds with a translate on its children, and the tabs would travel twice
+ * as far as anything else on the screen.
+ */
+.tabbar {
+	animation: fade-in var(--motion-enter) var(--ease-soft) both;
+}
+
+
+.tabbar > .tab {
+	animation: rise-in var(--motion-enter) var(--ease-out) backwards;
+}
+
+
+.tabbar > .tab:nth-child(1) {
+	animation-delay: calc(var(--stagger) * 1);
+}
+
+
+.tabbar > .tab:nth-child(2) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+
+
+.tabbar > .tab:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+
+
+.tabbar > .tab:nth-child(n + 4) {
+	animation-delay: calc(var(--stagger) * 4);
+}
+
+
+/*
+ * The label of the newly selected tab rolls up into place. It is the icon that
+ * carries selection — but the icon's lift is a `transform` declaration, and an
+ * animation with `both` would fill over it and hold the icon flat forever, so
+ * the label is what animates here.
+ */
+.tab.active .tab-label {
+	animation: roll-up var(--motion) var(--ease-out) both;
+}
+
+
+/* On the wide rail the tabs are a vertical column, so they arrive from the
+   side they live on rather than from below. */
+@media (min-width: 1280px) {
+	.tabbar > .tab {
+		animation-name: slide-in-left;
+	}
+}
+
+
+/* ── Floating action button ─────────────────────────────────────────────── */
+
+/*
+ * The FAB already had an entrance, but nothing happened while it was held: a
+ * press that only shrinks reads as a dead key on a surface this prominent.
+ * The ring is a pseudo-element rather than the button's own box-shadow because
+ * the button's shadow is its elevation, and elevation should not flicker.
+ *
+ * `position: absolute` matters — .fab is a grid container, and a static
+ * pseudo-element would become a second grid item and shove the icon off-centre.
+ */
+.fab::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 40%, transparent);
+	transition: box-shadow var(--motion-slow) var(--ease-out);
+}
+
+
+.fab:active::after {
+	box-shadow: 0 0 0 12px color-mix(in srgb, var(--accent) 0%, transparent);
+	transition-duration: var(--motion-instant);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+	.fab:hover::after {
+		box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 16%, transparent);
+	}
+}
+
+
+/* ── Sheets and menus ───────────────────────────────────────────────────── */
+
+/*
+ * A sheet slides up as one piece, and its contents used to be legible the
+ * instant it started moving — which means reading text that is still in
+ * flight. Holding them back until the sheet has nearly landed is the whole
+ * difference between a panel arriving and a panel that was already there.
+ *
+ * Only the three heading elements are listed. A blanket `> *` would also put a
+ * delay on rows that have an animation of their own, and a delay on an
+ * animation with `both` freezes the element on its first frame for that long.
+ */
+.pad-sheet > .sheet-title {
+	animation: rise-in var(--motion) calc(var(--stagger) * 2) var(--ease-out) both;
+}
+
+
+.pad-sheet > .sheet-desc {
+	animation: rise-in var(--motion) calc(var(--stagger) * 3) var(--ease-out) both;
+}
+
+
+.pad-sheet > .sheet-section {
+	animation: fade-in var(--motion) calc(var(--stagger) * 4) var(--ease-soft) both;
+}
+
+
+/*
+ * Menu rows cascade from the top — the direction the menu grew from. Tighter
+ * than the default rhythm: a menu is read in one glance, and 26ms a row makes a
+ * seven-item menu take longer to assemble than to choose from.
+ */
+.msg-menu button {
+	--stagger: 18ms;
+	animation: slide-in-left var(--motion) var(--ease-out) backwards;
+}
+
+
+.msg-menu button:nth-child(1) {
+	animation-delay: 0ms;
+}
+
+
+.msg-menu button:nth-child(2) {
+	animation-delay: calc(var(--stagger) * 1);
+}
+
+
+.msg-menu button:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+
+
+.msg-menu button:nth-child(4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+
+
+.msg-menu button:nth-child(5) {
+	animation-delay: calc(var(--stagger) * 4);
+}
+
+
+.msg-menu button:nth-child(6) {
+	animation-delay: calc(var(--stagger) * 5);
+}
+
+
+.msg-menu button:nth-child(n + 7) {
+	animation-delay: calc(var(--stagger) * 6);
+}
+
+
+/* The icon leads the row's hover rather than following it. */
+.msg-menu button .sheet-row-ico {
+	transition: transform var(--motion) var(--ease-spring);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+	.msg-menu button:hover .sheet-row-ico {
+		transform: scale(1.1);
+	}
+}
+
+
+.msg-menu button:active .sheet-row-ico {
+	transform: scale(0.92);
+}
+
+
+/*
+ * The reaction row is the one place a bounce belongs: the emoji are round, coin
+ * sized, and the gesture is playful by nature.
+ */
+.react-bar button {
+	--stagger: 22ms;
+	animation: bounce-in var(--motion-slow) var(--ease-spring) backwards;
+}
+
+
+.react-bar button:nth-child(1) {
+	animation-delay: 0ms;
+}
+
+
+.react-bar button:nth-child(2) {
+	animation-delay: calc(var(--stagger) * 1);
+}
+
+
+.react-bar button:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+
+
+.react-bar button:nth-child(4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+
+
+.react-bar button:nth-child(5) {
+	animation-delay: calc(var(--stagger) * 4);
+}
+
+
+.react-bar button:nth-child(n + 6) {
+	animation-delay: calc(var(--stagger) * 5);
+}
+
+
+/* ── Version stamp ──────────────────────────────────────────────────────── */
+
+/* Last thing on the settings screen, so it is the last thing to arrive. */
+.app-version {
+	animation: fade-in var(--motion-slower) calc(var(--stagger) * 8) var(--ease-soft) both;
+}

@@ -1,0 +1,25 @@
+/*
+ * Qix stylesheet entry point.
+ *
+ * Import order is the cascade order — modules that are meant to win are listed
+ * last. Vite inlines these at build time, so this stays one CSS request.
+ */
+
+@import './styles/tokens.css';
+@import './styles/base.css';
+@import './styles/looks.css';
+@import './styles/wallpapers.css';
+@import './styles/chrome.css';
+@import './styles/forms.css';
+@import './styles/auth.css';
+@import './styles/chat-list.css';
+@import './styles/chat.css';
+@import './styles/settings.css';
+@import './styles/appearance.css';
+@import './styles/profile.css';
+@import './styles/admin.css';
+@import './styles/onboarding.css';
+@import './styles/calls.css';
+@import './styles/overlays.css';
+@import './styles/motion.css';
+@import './styles/desktop.css';

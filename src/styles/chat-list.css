@@ -1,0 +1,938 @@
+/* ==========================================================================
+   Chat list — rows, swipe actions, search results, avatars, empty states.
+   ========================================================================== */
+
+
+.list {
+	flex: 1;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	background: var(--bg-elevated);
+	overscroll-behavior: contain;
+}
+
+
+.list.is-holding {
+	overflow: hidden;
+	touch-action: none;
+}
+
+
+/* Chat-list long-press reuses .menu-backdrop / .msg-sheet / .msg-menu */
+
+.empty {
+	padding: 64px 32px;
+	text-align: center;
+	color: var(--text-muted);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+}
+
+
+.empty strong {
+	font-size: var(--fs-lg);
+	font-weight: var(--fw-semi);
+	color: var(--text);
+	letter-spacing: var(--track-tight);
+}
+
+
+.empty-animate {
+	animation: empty-rise var(--motion-slow) var(--ease-out) both;
+}
+
+
+@keyframes empty-rise {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+
+.empty-icon {
+	display: grid;
+	place-items: center;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	background: var(--surface-sunken);
+	color: var(--text-muted);
+	margin-bottom: 2px;
+	animation: empty-rise var(--motion-slow) var(--ease-out) both;
+}
+
+
+.empty p {
+	margin: 0;
+	font-size: var(--fs-md);
+	max-width: 30ch;
+	line-height: 1.5;
+}
+
+
+.empty .btn {
+	margin-top: 8px;
+	min-width: 180px;
+}
+
+
+/* On the chat canvas the empty state sits on the wallpaper, so it needs its
+   own surface to stay legible against every look. */
+.chat-empty {
+	margin: auto;
+	padding: 28px 24px;
+	border-radius: var(--radius-lg);
+	background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	max-width: 300px;
+}
+
+
+.chat-empty .empty-icon {
+	background: var(--tint);
+	color: var(--accent);
+}
+
+
+.list-section-label {
+	padding: 16px var(--gutter) 6px;
+	font-size: var(--fs-xs);
+	font-weight: var(--fw-semi);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: color-mix(in srgb, var(--text-muted) 80%, transparent);
+}
+
+
+.chat-row-wrap {
+	--row-actions-w: 132px;
+	position: relative;
+	overflow: hidden;
+	animation: row-in var(--motion-enter) var(--ease-out) backwards;
+	touch-action: pan-y;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+
+@keyframes row-in {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+.row-actions-under {
+	position: absolute;
+	inset: 0 0 0 auto;
+	width: var(--row-actions-w);
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	justify-content: flex-end;
+	gap: 0;
+	padding: 0;
+	background: transparent;
+	z-index: 0;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 120ms ease;
+}
+
+
+.chat-row-wrap.menu-open .row-actions-under,
+.chat-row-wrap.swipe-open .row-actions-under,
+.chat-row-wrap.swiping .row-actions-under {
+	opacity: 1;
+}
+
+
+.chat-row-wrap.swipe-open .row-actions-under {
+	pointer-events: auto;
+}
+
+
+.row-action {
+	flex: 1;
+	border: none;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	color: #fff;
+	min-width: 60px;
+	font-size: 0.66rem;
+	font-weight: var(--fw-medium);
+	transition:
+		filter var(--motion-fast) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+}
+
+
+.row-action:active {
+	filter: brightness(1.08);
+	transform: scale(0.97);
+}
+
+
+.row-action.pin {
+	background: var(--accent);
+}
+
+
+.row-action.mute {
+	background: color-mix(in srgb, var(--text) 55%, var(--bg-muted));
+}
+
+
+.row-action.archive {
+	background: color-mix(in srgb, var(--text) 72%, var(--bg-muted));
+}
+
+
+.row-action.delete {
+	background: var(--danger);
+}
+
+
+/* ── Chat list row ──────────────────────────────────────────────────────────
+   Separator is inset past the avatar so the list reads as one column of text
+   rather than a stack of full-width bands. */
+.chat-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 11px var(--gutter);
+	border: none;
+	background: var(--bg-elevated);
+	color: inherit;
+	min-height: var(--row-h);
+	width: 100%;
+	text-align: left;
+	position: relative;
+	z-index: 1;
+	isolation: isolate;
+	transform: translateZ(0) scale(1);
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-slow) var(--ease-out);
+	cursor: pointer;
+	touch-action: pan-y;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+
+.chat-row::after {
+	content: '';
+	position: absolute;
+	left: 76px;
+	right: 0;
+	bottom: 0;
+	height: 1px;
+	background: var(--hairline);
+	transition: opacity var(--motion) var(--ease-soft);
+}
+
+
+.chat-row-wrap:last-child .chat-row::after {
+	opacity: 0;
+}
+
+
+.chat-row.holding {
+	transform: scale(0.98);
+	background: var(--surface-press);
+	z-index: 2;
+	border-radius: var(--radius);
+}
+
+
+.chat-row.holding::after {
+	opacity: 0;
+}
+
+
+.chat-row-wrap.menu-open .chat-row {
+	background: var(--surface-press);
+	transform: scale(0.99);
+}
+
+
+.chat-row-wrap.swiping .chat-row {
+	transition: none;
+}
+
+
+.chat-row:active {
+	background: var(--surface-press);
+}
+
+
+.chat-row.muted .name,
+.chat-row.muted .preview,
+.chat-row.muted .time {
+	opacity: 0.6;
+}
+
+
+.chat-row.unread .name {
+	font-weight: var(--fw-bold);
+	color: var(--text);
+}
+
+
+.chat-row.unread .preview {
+	color: color-mix(in srgb, var(--text) 76%, var(--text-muted));
+}
+
+
+.chat-row.unread .time {
+	color: var(--accent);
+	font-weight: var(--fw-semi);
+}
+
+
+.unread-badge.pop {
+	animation: badge-pop var(--motion-slow) var(--ease-spring) both;
+}
+
+
+@keyframes badge-pop {
+	0% {
+		transform: scale(0.6);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+
+.list-filter {
+	padding: 6px 12px 10px;
+	position: relative;
+	z-index: 15;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	background: var(--bg-elevated);
+}
+
+
+/* Reused by composer attachment chips. */
+@keyframes filter-in {
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+.list-filter-ico {
+	position: absolute;
+	left: 25px;
+	color: var(--text-muted);
+	display: grid;
+	place-items: center;
+	pointer-events: none;
+	z-index: 1;
+	transition: color var(--motion) var(--ease-soft);
+}
+
+
+.list-filter:focus-within .list-filter-ico {
+	color: var(--accent);
+}
+
+
+.list-filter-clear {
+	position: absolute;
+	right: 20px;
+	width: 30px;
+	height: 30px;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--text-muted);
+	display: grid;
+	place-items: center;
+	z-index: 1;
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft);
+}
+
+
+.list-filter-clear:hover {
+	background: var(--surface-hover);
+	color: var(--text);
+}
+
+
+.list-filter input {
+	width: 100%;
+	min-height: 42px;
+	padding: 0 40px;
+	border: 1px solid transparent;
+	border-radius: var(--radius-pill);
+	background: var(--surface-sunken);
+	color: var(--text);
+	font-size: var(--fs-md);
+	outline: none;
+	transition:
+		border-color var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+
+.list-filter input::placeholder {
+	color: color-mix(in srgb, var(--text-muted) 75%, transparent);
+}
+
+
+.list-filter input:focus {
+	border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+	background: var(--bg-elevated);
+}
+
+
+/* .coach-tip is defined once, further down with the rest of the app chrome. */
+
+.search-hint {
+	margin: 0;
+	font-size: var(--fs-sm);
+	color: var(--text-muted);
+	max-width: 280px;
+	line-height: 1.45;
+}
+
+
+.search-user-row,
+.search-msg-row {
+	animation: row-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+.search-user-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	flex: 1;
+	text-align: left;
+}
+
+
+.search-user-meta .name {
+	font-weight: var(--fw-semi);
+	letter-spacing: -0.01em;
+}
+
+
+.search-user-meta .hint {
+	font-size: var(--fs-sm);
+	color: var(--text-muted);
+}
+
+
+.search-msg-row .time {
+	font-size: var(--fs-xs);
+	color: var(--text-muted);
+	flex-shrink: 0;
+	align-self: flex-start;
+	margin-top: 2px;
+}
+
+
+.msg-snippet {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	display: block;
+}
+
+
+.chat-row .meta {
+	flex: 1;
+	min-width: 0;
+}
+
+
+.chat-row .row-top {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 2px;
+}
+
+
+.chat-row .name {
+	font-weight: var(--fw-semi);
+	font-size: var(--fs-md);
+	margin: 0;
+	letter-spacing: -0.01em;
+}
+
+
+.chat-row .time {
+	font-size: var(--fs-xs);
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+
+.chat-row .row-bottom {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+
+.chat-row .preview {
+	margin: 0;
+	color: var(--text-muted);
+	font-size: var(--fs-sm);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex: 1;
+	min-width: 0;
+}
+
+
+.unread-badge {
+	min-width: 20px;
+	height: 20px;
+	padding: 0 6px;
+	border-radius: var(--radius-pill);
+	background: var(--badge);
+	color: #fff;
+	font-size: 0.7rem;
+	font-weight: var(--fw-bold);
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	animation: badge-pop var(--motion-slow) var(--ease-spring) both;
+}
+
+
+.avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	font-weight: var(--fw-semi);
+	font-size: 1.05rem;
+	color: #fff;
+	flex-shrink: 0;
+	text-transform: uppercase;
+	letter-spacing: 0.01em;
+	transition: transform var(--motion-fast) var(--ease-soft);
+}
+
+
+.chat-row:active .avatar,
+.chat-row.holding .avatar {
+	transform: scale(0.95);
+}
+
+
+.avatar-wrap {
+	position: relative;
+	display: inline-flex;
+	flex-shrink: 0;
+	transition: transform var(--motion-fast) var(--ease-soft);
+	animation: avatar-pop var(--motion-enter) var(--ease-out) both;
+}
+
+
+.chat-row:active .avatar-wrap {
+	transform: scale(0.97);
+}
+
+
+.avatar-online {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: #2ecc71;
+	border: 2px solid var(--bg-elevated);
+}
+
+
+.avatar-letter {
+	background: color-mix(in srgb, var(--accent) 72%, #1a2a28);
+}
+
+
+.avatar-letter[data-tone='1'] {
+	background: color-mix(in srgb, var(--accent) 85%, #0a1a18);
+}
+
+.avatar-letter[data-tone='2'] {
+	background: color-mix(in srgb, var(--accent) 55%, #2b6cb0);
+}
+
+.avatar-letter[data-tone='3'] {
+	background: color-mix(in srgb, var(--accent) 45%, #c05621);
+}
+
+.avatar-letter[data-tone='4'] {
+	background: color-mix(in srgb, var(--accent) 40%, #5b4bb7);
+}
+
+.avatar-letter[data-tone='5'] {
+	background: color-mix(in srgb, var(--accent) 50%, #2f855a);
+}
+
+.avatar-letter[data-tone='6'] {
+	background: color-mix(in srgb, var(--accent) 45%, #b83232);
+}
+
+.avatar-letter[data-tone='7'] {
+	background: color-mix(in srgb, var(--accent) 60%, #2c7a7b);
+}
+
+
+.preview.draft {
+	color: var(--accent);
+	font-style: italic;
+}
+
+
+.preview.failed-send {
+	color: var(--danger);
+}
+
+
+.unread-badge.fail {
+	background: var(--danger);
+}
+
+
+.row-action.archive {
+	background: color-mix(in srgb, var(--text-muted) 35%, transparent);
+}
+
+
+.search-box {
+	padding: 10px 12px;
+	background: var(--bg-elevated);
+}
+
+
+.search-box input {
+	width: 100%;
+	min-height: 42px;
+	padding: 0 14px 0 38px;
+	border: 1px solid transparent;
+	border-radius: var(--radius-pill);
+	background: var(--surface-sunken)
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b9aaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E")
+		12px center no-repeat;
+	color: var(--text);
+	outline: none;
+	transition:
+		border-color var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+
+.search-box input:focus {
+	border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+	background-color: var(--bg-elevated);
+}
+
+
+.user-row {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 12px var(--gutter);
+	border: none;
+	background: transparent;
+	text-align: left;
+	color: inherit;
+	min-height: 64px;
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+	animation: row-in var(--motion-enter) var(--ease-out) backwards;
+}
+
+
+.user-row::after {
+	content: '';
+	position: absolute;
+	left: 72px;
+	right: 0;
+	bottom: 0;
+	height: 1px;
+	background: var(--hairline);
+}
+
+
+.user-row:last-child::after {
+	opacity: 0;
+}
+
+
+.user-row:nth-child(1) { animation-delay: 0ms; }
+
+.user-row:nth-child(2) { animation-delay: 20ms; }
+
+.user-row:nth-child(3) { animation-delay: 40ms; }
+
+.user-row:nth-child(4) { animation-delay: 60ms; }
+
+.user-row:nth-child(n + 5) { animation-delay: 80ms; }
+
+
+.user-row:active {
+	background: var(--surface-press);
+	transform: scale(0.99);
+}
+
+
+/* Pull-to-refresh: an inline strip that grows with the drag (height is set
+   from the component), so it never floats over the first row. */
+.pull-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	overflow: hidden;
+	color: var(--text-muted);
+	font-size: var(--fs-xs);
+	font-weight: var(--fw-medium);
+	transition: height var(--motion-fast) var(--ease-soft);
+}
+
+
+.pull-spinner {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	border: 2px solid color-mix(in srgb, var(--accent) 25%, transparent);
+	border-top-color: var(--accent);
+	opacity: 0;
+	transform: scale(0.6);
+	transition:
+		opacity var(--motion-fast) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-spring);
+}
+
+
+.pull-spinner.spin {
+	opacity: 1;
+	transform: scale(1);
+	animation: spin-loader 0.7s linear infinite;
+}
+
+
+@keyframes spin-loader {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+
+.pull-indicator .spin {
+	animation: none;
+}
+
+
+.preview-ico {
+	display: inline-flex;
+	vertical-align: -2px;
+	margin-right: 4px;
+	color: var(--accent);
+}
+
+
+.unread-badge.quiet {
+	background: var(--text-muted);
+}
+
+
+.pin-icon {
+	display: inline-flex;
+	vertical-align: middle;
+	margin-right: 4px;
+	color: var(--accent);
+}
+
+
+/* Channels + Telegram-like message formatting */
+.channel-avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	color: #fff;
+	font-family: var(--font-display, inherit);
+	font-weight: 700;
+	font-size: 1.15rem;
+	background: color-mix(in srgb, var(--accent) 82%, #0b2a27);
+	transition: transform var(--motion-fast) var(--ease-soft);
+	animation: avatar-pop var(--motion-enter) var(--ease-out) both;
+}
+
+
+.chat-row:active .channel-avatar,
+.user-row:active .channel-avatar {
+	transform: scale(0.95);
+}
+
+
+@keyframes avatar-pop {
+	from {
+		opacity: 0;
+		transform: scale(0.94);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+.channel-avatar[data-channel='notifications'] {
+	background: linear-gradient(145deg, #3a4a5c, #1e2a38);
+}
+
+
+.channel-avatar.sm {
+	width: 36px;
+	height: 36px;
+	font-size: 0.95rem;
+}
+
+
+.channel-head .channel-avatar {
+	width: 34px;
+	height: 34px;
+	font-size: 0.85rem;
+}
+
+/* ── Archive ────────────────────────────────────────────────────────────────
+   Same row, but the swipe actions are always-visible buttons instead. */
+.chat-row-wrap.archive-row {
+	display: flex;
+	align-items: stretch;
+	background: var(--bg-elevated);
+}
+
+.chat-row-wrap.archive-row .chat-row {
+	flex: 1;
+	min-width: 0;
+}
+
+.chat-row-wrap.archive-row .chat-row::after {
+	right: -80px;
+}
+
+.archive-row-actions {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	padding-right: 8px;
+	flex-shrink: 0;
+}
+
+/* ── List in motion, second pass ─────────────────────────────────────────── */
+
+.list-section-label {
+	animation: slide-in-left var(--motion-enter) var(--ease-out) backwards;
+}
+
+/* The filter bar unrolls from under the header it hangs beneath. */
+.list-filter {
+	animation: unfurl var(--motion) var(--ease-out) backwards;
+	transform-origin: top center;
+}
+.list-filter-clear {
+	animation: scale-in var(--motion-fast) var(--ease-spring);
+	transition: transform var(--motion-fast) var(--ease-spring), color var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+.list-filter-clear:active {
+	transform: scale(0.86);
+}
+.list-filter:focus-within .list-filter-ico {
+	animation: pop-in var(--motion) var(--ease-spring);
+}
+
+/* Empty states: the medallion lands first, the copy and the call to action follow. */
+.empty-icon {
+	animation: bounce-in var(--motion-slower) var(--ease-spring) backwards;
+}
+.empty p,
+.empty strong {
+	animation: rise-in var(--motion-enter) calc(var(--stagger) * 3) var(--ease-out) backwards;
+}
+.empty .btn {
+	animation: pop-rise var(--motion-slow) calc(var(--stagger) * 5) var(--ease-spring) backwards;
+}
+.search-hint {
+	animation: fade-in var(--motion-slower) calc(var(--stagger) * 2) var(--ease-soft) backwards;
+}
+
+/* Row furniture pops rather than blinks when a row changes state. */
+.pin-icon,
+.preview-ico {
+	animation: pop-in var(--motion) var(--ease-spring) backwards;
+}
+.avatar-online {
+	animation: bounce-in var(--motion-slow) var(--ease-spring) backwards;
+}
+
+/* Swipe actions answer the pointer on desktop too. */
+@media (hover: hover) and (pointer: fine) {
+	.row-action:hover {
+		filter: brightness(1.06);
+	}
+	.channel-avatar {
+		transition: transform var(--motion) var(--ease-spring);
+	}
+	.user-row:hover .channel-avatar,
+	.chat-row:hover .channel-avatar {
+		transform: scale(1.05) rotate(-2deg);
+	}
+}
+.archive-row-actions > * {
+	transition: transform var(--motion-fast) var(--ease-spring);
+}
+.archive-row-actions > *:active {
+	transform: scale(0.9);
+}

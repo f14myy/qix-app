@@ -1,0 +1,640 @@
+/* ==========================================================================
+   Form controls — fields, buttons, switches, segmented pills.
+   ========================================================================== */
+
+
+/* ── Form primitives (single source of truth) ─────────────────────────────── */
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+
+.field label {
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-semi);
+	color: var(--text-muted);
+}
+
+
+.field-input-wrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+
+.field input,
+.field-input-wrap input {
+	width: 100%;
+	min-height: 50px;
+	padding: 0 14px;
+	border: 1px solid var(--hairline-strong);
+	border-radius: var(--radius);
+	background: var(--surface-sunken);
+	color: var(--text);
+	font-size: var(--fs-md);
+	outline: none;
+	box-sizing: border-box;
+	transition:
+		border-color var(--motion) var(--ease-soft),
+		box-shadow var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+
+.field-input-wrap input {
+	padding-right: 46px;
+}
+
+
+.field input::placeholder {
+	color: color-mix(in srgb, var(--text-muted) 70%, transparent);
+}
+
+
+.field input:focus,
+.field-input-wrap input:focus {
+	border-color: color-mix(in srgb, var(--accent) 65%, transparent);
+	box-shadow: 0 0 0 3px var(--tint);
+	background: var(--bg-elevated);
+}
+
+
+.eye-btn {
+	position: absolute;
+	right: 7px;
+	width: 36px;
+	height: 36px;
+	border: none;
+	border-radius: var(--radius-sm);
+	background: transparent;
+	color: var(--text-muted);
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+	transition:
+		color var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+
+.eye-btn:hover,
+.eye-btn:focus-visible {
+	color: var(--text);
+	background: var(--surface-hover);
+}
+
+
+.field-hint {
+	margin: 4px 0 0;
+	font-size: var(--fs-xs);
+	color: var(--text-muted);
+	line-height: 1.4;
+}
+
+
+.error,
+.auth-error {
+	padding: 11px 13px;
+	border-radius: var(--radius-sm);
+	background: color-mix(in srgb, var(--danger) 10%, transparent);
+	color: var(--danger);
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-semi);
+	line-height: 1.35;
+	margin: 0;
+}
+
+
+/* ── Buttons ────────────────────────────────────────────────────────────────
+   One filled primary, one quiet secondary, one text ghost. No entrance
+   animation: a button that fades in reads as a page still loading. */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 50px;
+	padding: 0 20px;
+	border: none;
+	border-radius: var(--radius);
+	background: var(--accent);
+	color: #fff;
+	font-size: var(--fs-md);
+	font-weight: var(--fw-semi);
+	letter-spacing: -0.01em;
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft),
+		opacity var(--motion) var(--ease-soft);
+}
+
+
+.btn:hover {
+	background: var(--accent-hover);
+}
+
+
+.btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+	transform: none;
+}
+
+
+.btn-ghost {
+	background: transparent;
+	color: var(--accent);
+}
+
+
+.btn-ghost:hover {
+	background: var(--tint);
+}
+
+
+/* Neutral secondary — same weight as primary, none of the emphasis. */
+.btn-quiet {
+	background: var(--surface-sunken);
+	color: var(--text);
+	border: 1px solid var(--hairline);
+}
+
+
+.btn-quiet:hover {
+	background: var(--surface-hover);
+}
+
+
+.btn-block {
+	width: 100%;
+}
+
+
+/* Segmented control */
+.theme-pills {
+	display: flex;
+	gap: 2px;
+	padding: 3px;
+	background: var(--surface-sunken);
+	border-radius: var(--radius);
+}
+
+
+.theme-pill {
+	flex: 1;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	padding: 9px 10px;
+	border-radius: calc(var(--radius) - 4px);
+	font-weight: var(--fw-medium);
+	font-size: var(--fs-sm);
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+}
+
+
+.theme-pill:active {
+	transform: scale(0.97);
+}
+
+
+.theme-pill.active {
+	background: var(--bg-elevated);
+	color: var(--text);
+	font-weight: var(--fw-semi);
+	box-shadow: var(--elev-1);
+}
+
+
+.stacked-pills {
+	flex-direction: column;
+}
+
+
+.stacked-pills .theme-pill {
+	flex: none;
+	width: 100%;
+	text-align: left;
+	padding-left: 12px;
+}
+
+
+.ok-dot {
+	color: var(--accent);
+	font-size: 0.7rem;
+	line-height: 1;
+}
+
+
+.btn-danger-outline {
+	background: transparent;
+	color: var(--danger);
+	border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+
+.btn-danger-outline:hover {
+	background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+
+.toggle-row {
+	cursor: pointer;
+	user-select: none;
+}
+
+
+.toggle-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+	flex: 1;
+}
+
+
+/* Secondary copy anywhere. Previously only styled inside settings rows, so
+   .hint paragraphs elsewhere fell back to default paragraph metrics. */
+.hint {
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-regular);
+	color: var(--text-muted);
+	line-height: 1.4;
+}
+
+
+p.hint {
+	margin: 2px 0 0;
+}
+
+
+.toggle-copy .hint,
+.blocked-meta .hint,
+.settings-row .hint {
+	font-size: 0.78rem;
+	line-height: 1.35;
+}
+
+
+.switch {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 48px;
+	height: 30px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--text-muted) 28%, var(--bg-muted));
+	border: none;
+	position: relative;
+	flex-shrink: 0;
+	cursor: pointer;
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-spring);
+}
+
+
+.switch::after {
+	content: '';
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	transition: transform var(--motion-slow) var(--ease-spring);
+}
+
+
+.switch:checked {
+	background: var(--accent);
+}
+
+
+.switch:checked::after {
+	transform: translateX(18px);
+}
+
+
+.switch:active {
+	transform: scale(0.96);
+}
+
+
+.accent-grid {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+
+.accent-swatch {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	border: 2px solid transparent;
+	cursor: pointer;
+	transition:
+		transform var(--motion-fast) var(--ease-spring),
+		box-shadow var(--motion) ease,
+		border-color var(--motion) ease;
+}
+
+
+.accent-swatch:hover {
+	transform: scale(1.08);
+}
+
+
+.accent-swatch.active {
+	border-color: var(--text);
+	box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+
+.field-label-text {
+	display: block;
+	font-size: var(--fs-sm);
+	color: var(--text-muted);
+	font-weight: 600;
+	margin-bottom: 6px;
+}
+
+
+.field-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 6px;
+}
+
+
+.field-head label {
+	margin: 0;
+}
+
+
+.field-count {
+	font-size: var(--fs-xs);
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+
+.btn-danger {
+	background: var(--danger);
+	color: #fff;
+}
+
+
+.btn-danger:hover {
+	background: color-mix(in srgb, var(--danger) 88%, #000);
+}
+
+
+.app-prompt-input {
+	width: 100%;
+	margin: 0 0 14px;
+	padding: 12px 14px;
+	border-radius: var(--radius);
+	border: 1px solid var(--hairline-strong);
+	background: var(--surface-sunken);
+	color: var(--text);
+	font: inherit;
+	outline: none;
+}
+
+
+.app-prompt-input:focus {
+	border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+	background: var(--bg-elevated);
+}
+
+
+/* ==========================================================================
+   Motion
+   --------------------------------------------------------------------------
+   Controls should confirm they heard you. The switch is the one element here
+   that carries real state, so it gets the most detailed treatment.
+   ========================================================================== */
+
+/* ── Switch ─────────────────────────────────────────────────────────────────
+   The knob overshoots slightly on its way across, which is what makes the
+   toggle feel mechanical instead of like a colour swap. */
+/* Keeps the original background-color and transform legs — a shorter list here
+   would silently drop them, since this rule replaces the one further up. */
+.switch {
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-spring),
+		box-shadow var(--motion) var(--ease-soft);
+}
+
+.switch::after,
+.switch::before {
+	transition:
+		transform var(--motion-slow) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft);
+}
+
+.switch:active::after {
+	/* Squashes under the thumb, then springs back. */
+	transform: scale(0.9);
+}
+
+.toggle-row {
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-out);
+}
+
+.toggle-row:active {
+	transform: scale(0.99);
+}
+
+
+/* ── Buttons ────────────────────────────────────────────────────────────────*/
+.btn {
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		border-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft),
+		box-shadow var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-out);
+}
+
+.btn:not(:disabled):active {
+	transform: scale(0.97);
+}
+
+.btn:disabled {
+	transition:
+		opacity var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+
+/* ── Fields ─────────────────────────────────────────────────────────────────
+   The focus ring grows in rather than snapping on, and the character counter
+   only draws attention when it changes. */
+.field input,
+.field textarea,
+.field select,
+.app-prompt-input,
+.profile-bio-input {
+	transition:
+		border-color var(--motion) var(--ease-soft),
+		box-shadow var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+.field-count {
+	transition: color var(--motion) var(--ease-soft);
+}
+
+/* Errors slide in from the field they belong to, so the eye follows. */
+.error,
+.auth-error {
+	animation: drop-in var(--motion) var(--ease-out) both;
+}
+
+.eye-btn {
+	transition:
+		color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-spring);
+}
+
+.eye-btn:active {
+	transform: scale(0.88);
+}
+
+
+/* ── Pills ──────────────────────────────────────────────────────────────────*/
+/* box-shadow stays in the list: it is what draws the selected ring on a
+   swatch, and this rule overrides the one that used to carry it. */
+.theme-pill,
+.accent-swatch {
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft),
+		border-color var(--motion) var(--ease-soft),
+		box-shadow var(--motion) var(--ease-soft),
+		transform var(--motion) var(--ease-spring);
+}
+
+.theme-pill:active,
+.accent-swatch:active {
+	transform: scale(0.94);
+}
+
+.ok-dot {
+	animation: pop-in var(--motion) var(--ease-bounce) both;
+}
+
+/* ── Forms in motion, second pass ────────────────────────────────────────── */
+
+/*
+ * A light sheen crosses solid buttons on hover. Ghost and quiet variants sit on
+ * pale surfaces where it would only read as noise, so they are left out — and
+ * with them the `overflow: hidden` that the sweep needs.
+ */
+@media (hover: hover) and (pointer: fine) {
+	.btn:not(.btn-ghost):not(.btn-quiet):not(:disabled) {
+		position: relative;
+		overflow: hidden;
+	}
+	.btn:not(.btn-ghost):not(.btn-quiet):not(:disabled)::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: linear-gradient(
+			105deg,
+			transparent 32%,
+			rgba(255, 255, 255, 0.22) 50%,
+			transparent 68%
+		);
+		transform: translate3d(-130%, 0, 0);
+	}
+	.btn:not(.btn-ghost):not(.btn-quiet):not(:disabled):hover::after {
+		animation: sheen 760ms var(--ease-out);
+	}
+	.btn-danger-outline:hover {
+		box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--danger) 60%, transparent);
+	}
+}
+
+/* Segmented controls acknowledge the switch instead of just recolouring. */
+.theme-pill.active {
+	animation: pop-in var(--motion) var(--ease-spring);
+}
+.stacked-pills .theme-pill {
+	--stagger: 26ms;
+	animation: rise-in var(--motion-enter) var(--ease-out) backwards;
+}
+.stacked-pills .theme-pill:nth-child(2) {
+	animation-delay: var(--stagger);
+}
+.stacked-pills .theme-pill:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.stacked-pills .theme-pill:nth-child(n + 4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+
+/* The accent grid deals itself out, and the chosen swatch bounces on selection. */
+.accent-grid > .accent-swatch {
+	--stagger: 22ms;
+	animation: pop-in var(--motion) var(--ease-spring) backwards;
+}
+.accent-grid > .accent-swatch:nth-child(2) {
+	animation-delay: var(--stagger);
+}
+.accent-grid > .accent-swatch:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.accent-grid > .accent-swatch:nth-child(4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+.accent-grid > .accent-swatch:nth-child(5) {
+	animation-delay: calc(var(--stagger) * 4);
+}
+.accent-grid > .accent-swatch:nth-child(6) {
+	animation-delay: calc(var(--stagger) * 5);
+}
+.accent-grid > .accent-swatch:nth-child(7) {
+	animation-delay: calc(var(--stagger) * 6);
+}
+.accent-grid > .accent-swatch:nth-child(n + 8) {
+	animation-delay: calc(var(--stagger) * 7);
+}
+.accent-swatch.active {
+	animation: bounce-in var(--motion-slow) var(--ease-spring);
+}
+
+/* Fields in a stacked card arrive one after another. */
+.settings-form-stack > .field {
+	--stagger: 34ms;
+	animation: rise-in var(--motion-enter) var(--ease-out) backwards;
+}
+.settings-form-stack > .field:nth-child(2) {
+	animation-delay: var(--stagger);
+}
+.settings-form-stack > .field:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.settings-form-stack > .field:nth-child(n + 4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+.field-hint,
+.field-count {
+	animation: fade-in var(--motion-slower) var(--ease-soft) backwards;
+}

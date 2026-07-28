@@ -1,0 +1,48 @@
+[package]
+name = "qix-app"
+version = "1.2.0"
+description = "Qix messenger — desktop and Android client"
+authors = ["f14myy"]
+edition = "2021"
+
+[lib]
+# The `_lib` suffix keeps the lib name distinct from the bin name on Windows.
+# See https://github.com/rust-lang/cargo/issues/8519
+name = "qix_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-os = "2"
+tauri-plugin-store = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-process = "2"
+tauri-plugin-deep-link = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Vibration exists only on phones.
+[target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
+tauri-plugin-haptics = "2"
+
+# Starting and stopping the background notification service means calling into
+# our own Kotlin code, so the Android build needs a JNI bridge.
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+ndk-context = "0.1"
+
+[profile.release]
+# Smaller APK / installer: the messenger is not CPU-bound, so trade compile
+# units for size and strip everything the runtime does not need.
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

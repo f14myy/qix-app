@@ -1,0 +1,546 @@
+/* ==========================================================================
+   Chat wallpapers, wallpaper intensity and bubble shape personalization.
+   ========================================================================== */
+
+
+/* Wallpaper patterns, applied to the chat canvas and to preview surfaces. */
+[data-wallpaper='dots'] .chat-view,
+[data-wallpaper='dots'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		radial-gradient(circle at 1px 1px, var(--chat-dot) 1px, transparent 0);
+	background-size:
+		100% 100%,
+		18px 18px;
+}
+
+
+[data-wallpaper='crosses'] .chat-view,
+[data-wallpaper='crosses'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		linear-gradient(var(--chat-dot) 1.5px, transparent 1.5px),
+		linear-gradient(90deg, var(--chat-dot) 1.5px, transparent 1.5px);
+	background-size:
+		100% 100%,
+		16px 16px,
+		16px 16px;
+	background-position:
+		0 0,
+		0 7px,
+		7px 0;
+}
+
+
+[data-wallpaper='diagonals'] .chat-view,
+[data-wallpaper='diagonals'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-linear-gradient(
+			-42deg,
+			transparent,
+			transparent 7px,
+			var(--chat-dot) 7px,
+			var(--chat-dot) 8px
+		);
+	background-size: 100% 100%, auto;
+}
+
+
+[data-wallpaper='diamonds'] .chat-view,
+[data-wallpaper='diamonds'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		linear-gradient(45deg, var(--chat-dot) 25%, transparent 25%),
+		linear-gradient(-45deg, var(--chat-dot) 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, var(--chat-dot) 75%),
+		linear-gradient(-45deg, transparent 75%, var(--chat-dot) 75%);
+	background-size:
+		100% 100%,
+		16px 16px,
+		16px 16px,
+		16px 16px,
+		16px 16px;
+	background-position:
+		0 0,
+		0 0,
+		0 8px,
+		8px -8px,
+		-8px 0;
+}
+
+
+[data-wallpaper='ripples'] .chat-view,
+[data-wallpaper='ripples'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		radial-gradient(
+			circle,
+			transparent 42%,
+			var(--chat-dot) 43%,
+			var(--chat-dot) 46%,
+			transparent 47%
+		);
+	background-size:
+		100% 100%,
+		26px 26px;
+}
+
+
+[data-wallpaper='grid'] .chat-view,
+[data-wallpaper='grid'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		linear-gradient(var(--chat-dot) 1px, transparent 1px),
+		linear-gradient(90deg, var(--chat-dot) 1px, transparent 1px);
+	background-size:
+		100% 100%,
+		24px 24px,
+		24px 24px;
+}
+
+
+[data-wallpaper='bloom'] .chat-view,
+[data-wallpaper='bloom'] .wallpaper-sample {
+	background-image:
+		radial-gradient(ellipse 55% 45% at 18% 22%, var(--chat-glow), transparent 55%),
+		radial-gradient(ellipse 50% 40% at 82% 78%, var(--chat-glow), transparent 50%),
+		radial-gradient(
+			ellipse 40% 35% at 60% 40%,
+			color-mix(in srgb, var(--chat-glow) 55%, transparent),
+			transparent 55%
+		),
+		radial-gradient(circle at 1px 1px, var(--chat-dot) 1px, transparent 0);
+	background-size:
+		100% 100%,
+		100% 100%,
+		100% 100%,
+		18px 18px;
+}
+
+
+[data-wallpaper='none'] .chat-view,
+[data-wallpaper='none'] .wallpaper-sample {
+	background-image: none;
+	background-color: var(--bg-chat);
+}
+
+
+[data-wallpaper-preview='dots'] .look-card-chat,
+[data-wallpaper-preview='dots'] .appearance-live-chat,
+[data-wallpaper='dots'] .appearance-live-chat {
+	background-image: radial-gradient(circle at 1px 1px, var(--chat-dot) 1px, transparent 0);
+	background-size: 14px 14px;
+}
+
+
+[data-wallpaper-preview='crosses'] .look-card-chat,
+[data-wallpaper-preview='crosses'] .appearance-live-chat,
+[data-wallpaper='crosses'] .appearance-live-chat {
+	background-image:
+		linear-gradient(var(--chat-dot) 1.5px, transparent 1.5px),
+		linear-gradient(90deg, var(--chat-dot) 1.5px, transparent 1.5px);
+	background-size: 14px 14px, 14px 14px;
+	background-position: 0 6px, 6px 0;
+}
+
+
+[data-wallpaper-preview='diagonals'] .look-card-chat,
+[data-wallpaper-preview='diagonals'] .appearance-live-chat,
+[data-wallpaper='diagonals'] .appearance-live-chat {
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent,
+		transparent 5px,
+		var(--chat-dot) 5px,
+		var(--chat-dot) 6px
+	);
+}
+
+
+[data-wallpaper-preview='diamonds'] .look-card-chat,
+[data-wallpaper-preview='diamonds'] .appearance-live-chat,
+[data-wallpaper='diamonds'] .appearance-live-chat {
+	background-image:
+		linear-gradient(45deg, var(--chat-dot) 25%, transparent 25%),
+		linear-gradient(-45deg, var(--chat-dot) 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, var(--chat-dot) 75%),
+		linear-gradient(-45deg, transparent 75%, var(--chat-dot) 75%);
+	background-size: 12px 12px, 12px 12px, 12px 12px, 12px 12px;
+	background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+}
+
+
+[data-wallpaper-preview='ripples'] .look-card-chat,
+[data-wallpaper-preview='ripples'] .appearance-live-chat,
+[data-wallpaper='ripples'] .appearance-live-chat {
+	background-image: radial-gradient(
+		circle,
+		transparent 40%,
+		var(--chat-dot) 41%,
+		var(--chat-dot) 44%,
+		transparent 45%
+	);
+	background-size: 20px 20px;
+}
+
+
+[data-wallpaper-preview='grid'] .look-card-chat,
+[data-wallpaper-preview='grid'] .appearance-live-chat,
+[data-wallpaper='grid'] .appearance-live-chat {
+	background-image:
+		linear-gradient(var(--chat-dot) 1px, transparent 1px),
+		linear-gradient(90deg, var(--chat-dot) 1px, transparent 1px);
+	background-size: 18px 18px, 18px 18px;
+}
+
+
+[data-wallpaper-preview='bloom'] .look-card-chat,
+[data-wallpaper-preview='bloom'] .appearance-live-chat,
+[data-wallpaper='bloom'] .appearance-live-chat {
+	background-image:
+		radial-gradient(ellipse 60% 50% at 20% 30%, var(--chat-glow), transparent 55%),
+		radial-gradient(ellipse 50% 40% at 80% 70%, var(--chat-glow), transparent 50%),
+		radial-gradient(circle at 1px 1px, var(--chat-dot) 1px, transparent 0);
+	background-size: 100% 100%, 100% 100%, 14px 14px;
+}
+
+
+[data-wallpaper-preview='chevrons'] .look-card-chat,
+[data-wallpaper-preview='chevrons'] .appearance-live-chat,
+[data-wallpaper-preview='chevrons'] .wallpaper-sample,
+[data-wallpaper='chevrons'] .chat-view,
+[data-wallpaper='chevrons'] .appearance-live-chat {
+	background-image:
+		var(--chat-wallpaper-glow, none),
+		repeating-linear-gradient(
+			135deg,
+			transparent,
+			transparent 8px,
+			var(--chat-dot) 8px,
+			var(--chat-dot) 9px,
+			transparent 9px,
+			transparent 17px,
+			var(--chat-dot) 17px,
+			var(--chat-dot) 18px
+		);
+	background-size: 100% 100%, 28px 28px;
+}
+
+
+[data-wallpaper-preview='stars'] .look-card-chat,
+[data-wallpaper-preview='stars'] .appearance-live-chat,
+[data-wallpaper-preview='stars'] .wallpaper-sample,
+[data-wallpaper='stars'] .chat-view,
+[data-wallpaper='stars'] .appearance-live-chat {
+	background-image:
+		var(--chat-wallpaper-glow, none),
+		radial-gradient(circle, var(--chat-dot) 1.2px, transparent 1.3px),
+		radial-gradient(circle, var(--chat-dot) 1px, transparent 1.1px);
+	background-size:
+		100% 100%,
+		22px 22px,
+		11px 11px;
+	background-position:
+		0 0,
+		0 0,
+		11px 11px;
+}
+
+
+[data-wallpaper-preview='weave'] .look-card-chat,
+[data-wallpaper-preview='weave'] .appearance-live-chat,
+[data-wallpaper-preview='weave'] .wallpaper-sample,
+[data-wallpaper='weave'] .chat-view,
+[data-wallpaper='weave'] .appearance-live-chat {
+	background-image:
+		var(--chat-wallpaper-glow, none),
+		repeating-linear-gradient(
+			0deg,
+			transparent,
+			transparent 5px,
+			var(--chat-dot) 5px,
+			var(--chat-dot) 6px
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent,
+			transparent 5px,
+			var(--chat-dot) 5px,
+			var(--chat-dot) 6px
+		);
+	background-size: 100% 100%, auto, auto;
+}
+
+
+[data-wallpaper-preview='mist'] .look-card-chat,
+[data-wallpaper-preview='mist'] .appearance-live-chat,
+[data-wallpaper-preview='mist'] .wallpaper-sample,
+[data-wallpaper='mist'] .chat-view,
+[data-wallpaper='mist'] .appearance-live-chat {
+	background-image:
+		radial-gradient(ellipse 70% 55% at 15% 20%, var(--chat-glow), transparent 60%),
+		radial-gradient(ellipse 55% 45% at 85% 75%, var(--chat-glow), transparent 55%),
+		radial-gradient(ellipse 40% 35% at 50% 50%, color-mix(in srgb, var(--chat-glow) 50%, transparent), transparent 60%);
+	background-size: 100% 100%, 100% 100%, 100% 100%;
+}
+
+
+[data-wallpaper-preview='none'] .look-card-chat,
+[data-wallpaper-preview='none'] .appearance-live-chat,
+[data-wallpaper='none'] .appearance-live-chat {
+	background-image: none;
+}
+
+
+/* Wallpaper intensity */
+[data-wp-intensity='soft'] {
+	--chat-dot: color-mix(in srgb, var(--chat-dot-base, currentColor) 45%, transparent);
+}
+
+
+[data-wp-intensity='soft'] .chat-view,
+[data-wp-intensity='soft'] .wallpaper-sample,
+[data-wp-intensity='soft'] .look-card-chat,
+[data-wp-intensity='soft'] .appearance-live-chat {
+	opacity: 1;
+}
+
+
+[data-wp-intensity='soft'] {
+	--chat-glow: color-mix(in srgb, var(--chat-glow) 55%, transparent);
+}
+
+
+/* Soft: weaken the pattern by mixing the dot colour toward the canvas. */
+html[data-wp-intensity='soft'] {
+	--wp-alpha: 0.45;
+}
+
+
+html[data-wp-intensity='normal'] {
+	--wp-alpha: 1;
+}
+
+
+html[data-wp-intensity='bold'] {
+	--wp-alpha: 1.55;
+}
+
+
+html[data-wp-intensity='soft'] .chat-view,
+html[data-wp-intensity='soft'] [data-wallpaper-preview] .wallpaper-sample,
+html[data-wp-intensity='soft'] [data-wallpaper-preview] .look-card-chat,
+html[data-wp-intensity='soft'] .appearance-live-chat {
+	filter: none;
+}
+
+
+/* Apply intensity by scaling pattern contrast via background-blend */
+html[data-wp-intensity='soft'] .chat-view,
+html[data-wp-intensity='bold'] .chat-view {
+	background-blend-mode: normal, soft-light;
+}
+
+
+html[data-wp-intensity='bold'] {
+	--chat-dot: color-mix(in srgb, var(--text) 14%, transparent);
+	--chat-glow: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+
+html[data-wp-intensity='soft'] {
+	--chat-dot: color-mix(in srgb, var(--text) 3.5%, transparent);
+	--chat-glow: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+
+html[data-theme='dark'][data-wp-intensity='bold'] {
+	--chat-dot: color-mix(in srgb, #fff 9%, transparent);
+	--chat-glow: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+
+html[data-theme='dark'][data-wp-intensity='soft'] {
+	--chat-dot: color-mix(in srgb, #fff 2%, transparent);
+	--chat-glow: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+
+/* Extra wallpaper patterns */
+[data-wallpaper-preview='hex'] .look-card-chat,
+[data-wallpaper-preview='hex'] .appearance-live-chat,
+[data-wallpaper-preview='hex'] .wallpaper-sample,
+[data-wallpaper='hex'] .chat-view,
+[data-wallpaper='hex'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-linear-gradient(0deg, transparent 0 10px, var(--chat-dot) 10px 11px),
+		repeating-linear-gradient(60deg, transparent 0 10px, var(--chat-dot) 10px 11px),
+		repeating-linear-gradient(120deg, transparent 0 10px, var(--chat-dot) 10px 11px);
+	background-size: 100% 100%, 22px 19px, 22px 19px, 22px 19px;
+}
+
+[data-wallpaper-preview='waves'] .look-card-chat,
+[data-wallpaper-preview='waves'] .appearance-live-chat,
+[data-wallpaper-preview='waves'] .wallpaper-sample,
+[data-wallpaper='waves'] .chat-view,
+[data-wallpaper='waves'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-radial-gradient(circle at 0 50%, transparent 0, transparent 8px, var(--chat-dot) 8px, var(--chat-dot) 9px, transparent 10px);
+	background-size: 100% 100%, 28px 18px;
+}
+
+[data-wallpaper-preview='confetti'] .look-card-chat,
+[data-wallpaper-preview='confetti'] .appearance-live-chat,
+[data-wallpaper-preview='confetti'] .wallpaper-sample,
+[data-wallpaper='confetti'] .chat-view,
+[data-wallpaper='confetti'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		radial-gradient(circle at 20% 30%, var(--chat-dot) 1.5px, transparent 2px),
+		radial-gradient(circle at 70% 55%, var(--chat-dot) 1.2px, transparent 2px),
+		radial-gradient(circle at 40% 80%, var(--chat-dot) 1.8px, transparent 2.5px),
+		radial-gradient(circle at 85% 20%, var(--chat-dot) 1px, transparent 1.8px);
+	background-size: 100% 100%, 24px 24px, 28px 28px, 32px 32px, 20px 20px;
+}
+
+[data-wallpaper-preview='scanlines'] .look-card-chat,
+[data-wallpaper-preview='scanlines'] .appearance-live-chat,
+[data-wallpaper-preview='scanlines'] .wallpaper-sample,
+[data-wallpaper='scanlines'] .chat-view,
+[data-wallpaper='scanlines'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-linear-gradient(180deg, transparent 0 3px, var(--chat-dot) 3px 4px);
+	background-size: 100% 100%, 100% 8px;
+}
+
+[data-wallpaper-preview='tiles'] .look-card-chat,
+[data-wallpaper-preview='tiles'] .appearance-live-chat,
+[data-wallpaper-preview='tiles'] .wallpaper-sample,
+[data-wallpaper='tiles'] .chat-view,
+[data-wallpaper='tiles'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		linear-gradient(var(--chat-dot) 1px, transparent 1px),
+		linear-gradient(90deg, var(--chat-dot) 1px, transparent 1px);
+	background-size: 100% 100%, 16px 16px, 16px 16px;
+}
+
+[data-wallpaper-preview='orbit'] .look-card-chat,
+[data-wallpaper-preview='orbit'] .appearance-live-chat,
+[data-wallpaper-preview='orbit'] .wallpaper-sample,
+[data-wallpaper='orbit'] .chat-view,
+[data-wallpaper='orbit'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-radial-gradient(circle at 50% 50%, transparent 0 10px, var(--chat-dot) 10px 11px, transparent 12px);
+	background-size: 100% 100%, 36px 36px;
+}
+
+[data-wallpaper-preview='topo'] .look-card-chat,
+[data-wallpaper-preview='topo'] .appearance-live-chat,
+[data-wallpaper-preview='topo'] .wallpaper-sample,
+[data-wallpaper='topo'] .chat-view,
+[data-wallpaper='topo'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-radial-gradient(ellipse at 30% 40%, transparent 0 12px, var(--chat-dot) 12px 13px, transparent 14px),
+		repeating-radial-gradient(ellipse at 70% 70%, transparent 0 16px, var(--chat-dot) 16px 17px, transparent 18px);
+	background-size: 100% 100%, 48px 40px, 56px 48px;
+}
+
+[data-wallpaper-preview='noise'] .look-card-chat,
+[data-wallpaper-preview='noise'] .appearance-live-chat,
+[data-wallpaper-preview='noise'] .wallpaper-sample,
+[data-wallpaper='noise'] .chat-view,
+[data-wallpaper='noise'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-linear-gradient(45deg, transparent 0 2px, var(--chat-dot) 2px 3px),
+		repeating-linear-gradient(-45deg, transparent 0 3px, var(--chat-dot) 3px 4px);
+	background-size: 100% 100%, 7px 7px, 9px 9px;
+}
+
+[data-wallpaper-preview='petals'] .look-card-chat,
+[data-wallpaper-preview='petals'] .appearance-live-chat,
+[data-wallpaper-preview='petals'] .wallpaper-sample,
+[data-wallpaper='petals'] .chat-view,
+[data-wallpaper='petals'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		radial-gradient(ellipse 40% 60% at 25% 35%, var(--chat-dot) 0 40%, transparent 42%),
+		radial-gradient(ellipse 50% 40% at 70% 65%, var(--chat-dot) 0 35%, transparent 38%);
+	background-size: 100% 100%, 28px 28px, 34px 34px;
+}
+
+[data-wallpaper-preview='stripes'] .look-card-chat,
+[data-wallpaper-preview='stripes'] .appearance-live-chat,
+[data-wallpaper-preview='stripes'] .wallpaper-sample,
+[data-wallpaper='stripes'] .chat-view,
+[data-wallpaper='stripes'] .wallpaper-sample {
+	background-image:
+		var(--chat-wallpaper-glow),
+		repeating-linear-gradient(135deg, transparent 0 8px, var(--chat-dot) 8px 9px);
+	background-size: 100% 100%, 22px 22px;
+}
+
+
+/* Bubble shape personalization */
+[data-bubble='soft'] {
+	--radius-bubble: 22px;
+}
+
+[data-bubble='soft'] .bubble.me { border-bottom-right-radius: 8px; }
+
+[data-bubble='soft'] .bubble.them { border-bottom-left-radius: 8px; }
+
+
+[data-bubble='pill'] {
+	--radius-bubble: 28px;
+}
+
+[data-bubble='pill'] .bubble.me,
+[data-bubble='pill'] .bubble.them {
+	border-radius: 28px;
+}
+
+[data-bubble='pill'] .bubble.me.tail:not(.grouped),
+[data-bubble='pill'] .bubble.them.tail:not(.grouped) {
+	border-radius: 28px;
+}
+
+
+[data-bubble='sharp'] {
+	--radius-bubble: 8px;
+}
+
+[data-bubble='sharp'] .bubble.me { border-bottom-right-radius: 2px; }
+
+[data-bubble='sharp'] .bubble.them { border-bottom-left-radius: 2px; }
+
+[data-bubble-preview='default'] .bubble-style-them,
+[data-bubble-preview='default'] .bubble-style-me { border-radius: 12px; }
+
+[data-bubble-preview='default'] .bubble-style-them { border-bottom-left-radius: 4px; }
+
+[data-bubble-preview='default'] .bubble-style-me { border-bottom-right-radius: 4px; }
+
+[data-bubble-preview='soft'] .bubble-style-them,
+[data-bubble-preview='soft'] .bubble-style-me { border-radius: 16px; }
+
+[data-bubble-preview='soft'] .bubble-style-them { border-bottom-left-radius: 6px; }
+
+[data-bubble-preview='soft'] .bubble-style-me { border-bottom-right-radius: 6px; }
+
+[data-bubble-preview='pill'] .bubble-style-them,
+[data-bubble-preview='pill'] .bubble-style-me { border-radius: 999px; }
+
+[data-bubble-preview='sharp'] .bubble-style-them,
+[data-bubble-preview='sharp'] .bubble-style-me { border-radius: 6px; }
+
+[data-bubble-preview='sharp'] .bubble-style-them { border-bottom-left-radius: 2px; }
+
+[data-bubble-preview='sharp'] .bubble-style-me { border-bottom-right-radius: 2px; }

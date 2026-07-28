@@ -1,0 +1,431 @@
+/* ==========================================================================
+   Pointer-device affordances and the desktop window layout.
+   Loaded last: these rules are meant to win.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   Pointer devices
+   --------------------------------------------------------------------------
+   Behaviour that only makes sense with a mouse: hover feedback, selectable
+   message text, and scrollbars that don't shout.
+   ========================================================================== */
+@media (hover: hover) and (pointer: fine) {
+	.chat-row:hover,
+	.user-row:hover,
+	.overlay-hit:hover {
+		background: var(--surface-hover);
+	}
+
+	.row-action:hover {
+		filter: brightness(1.06);
+	}
+
+	.gallery-cell:hover {
+		opacity: 0.86;
+	}
+
+	/*
+	 * Touch builds lock selection so long-press opens the message menu instead
+	 * of a selection handle. With a mouse that just makes text uncopyable, so
+	 * the bubble body opts back in. Padding stays inert for drag-to-reply.
+	 */
+	.bubble .body,
+	.bubble .body *,
+	.bubble .msg-formatted,
+	.bubble .msg-formatted *,
+	.bubble .reply-quote,
+	.bubble .time {
+		-webkit-user-select: text !important;
+		user-select: text !important;
+		cursor: auto;
+	}
+
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: color-mix(in srgb, var(--text) 22%, transparent) transparent;
+	}
+
+	::-webkit-scrollbar {
+		width: 10px;
+		height: 10px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	::-webkit-scrollbar-thumb {
+		border: 3px solid transparent;
+		border-radius: var(--radius-pill);
+		background-clip: content-box;
+		background-color: color-mix(in srgb, var(--text) 18%, transparent);
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background-color: color-mix(in srgb, var(--text) 30%, transparent);
+	}
+}
+
+
+/* ==========================================================================
+   Desktop
+   --------------------------------------------------------------------------
+   The phone column becomes a framed app window: a permanent navigation rail
+   on the left, one content pane on the right. The rail is always mounted at
+   this width (see TabBar `secondary`) so the pane never changes width when
+   you open a chat.
+   ========================================================================== */
+@media (min-width: 900px) {
+	html {
+		background: color-mix(in srgb, var(--bg) 90%, var(--text));
+	}
+
+	body {
+		background: transparent;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 24px;
+	}
+
+	.app-shell {
+		flex-direction: row;
+		width: min(100%, 920px);
+		max-width: none;
+		height: min(100%, 880px);
+		max-height: 100%;
+		margin: 0;
+		border: 1px solid var(--hairline-strong);
+		border-radius: 20px;
+		box-shadow: var(--elev-3);
+		overflow: hidden;
+	}
+
+	/* ── Navigation rail ──────────────────────────────────────────────────── */
+	.tabbar,
+	.tabbar.is-secondary {
+		display: flex;
+		order: -1;
+		width: 220px;
+		flex-shrink: 0;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: flex-start;
+		gap: 2px;
+		padding: 14px 10px calc(14px + var(--safe-bottom));
+		position: static;
+		background: var(--bg);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+		border-top: none;
+		border-right: 1px solid var(--hairline);
+	}
+
+	.tab {
+		flex: 0 0 auto;
+		flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
+		gap: 12px;
+		min-height: 42px;
+		padding: 0 12px;
+		border-radius: var(--radius-sm);
+		transition:
+			background-color var(--motion) var(--ease-soft),
+			color var(--motion) var(--ease-soft);
+	}
+
+	.tab::before {
+		display: none;
+	}
+
+	.tab:hover {
+		background: var(--surface-hover);
+		color: var(--text);
+	}
+
+	.tab.active,
+	.tab.active:hover {
+		background: var(--surface-sunken);
+		color: var(--accent);
+	}
+
+	.tab:active {
+		transform: none;
+	}
+
+	/* Unwrap the icon box so the badge can be ordered to the row's far end. */
+	.tab-ico {
+		display: contents;
+	}
+
+	.tab-label {
+		font-size: var(--fs-md);
+		font-weight: var(--fw-medium);
+		letter-spacing: -0.005em;
+	}
+
+	.tab.active .tab-label {
+		font-weight: var(--fw-semi);
+	}
+
+	.tab-badge {
+		position: static;
+		order: 1;
+		margin-left: auto;
+		min-width: 20px;
+		height: 20px;
+		line-height: 20px;
+		font-size: 0.68rem;
+		box-shadow: none;
+	}
+
+	/* ── Content pane ─────────────────────────────────────────────────────── */
+	.screen {
+		min-width: 0;
+	}
+
+	/* Forms and reading columns stay at a comfortable measure. */
+	.auth-card,
+	.settings-body,
+	.request-list,
+	.invite-body,
+	.profile-page .profile-view,
+	.admin-body {
+		width: 100%;
+		max-width: 620px;
+		margin-inline: auto;
+	}
+
+	.auth-card {
+		max-width: 400px;
+	}
+
+	.messages {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	.bubble {
+		max-width: min(72%, 460px);
+	}
+
+	.composer {
+		margin: 0 16px;
+	}
+
+	.chat-empty {
+		max-width: 340px;
+	}
+
+	/* ── Overlays ─────────────────────────────────────────────────────────── */
+	/* A full-width bottom sheet reads as broken on a wide screen; float it. */
+	.chat-overlay-sheet {
+		left: 50%;
+		right: auto;
+		transform: translateX(-50%);
+		width: min(560px, calc(100% - 48px));
+		bottom: 32px;
+		max-height: 70vh;
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--hairline-strong);
+	}
+
+	/* The enter animation drives `transform`, so it has to carry the centring. */
+	@keyframes sheet-rise {
+		from {
+			opacity: 0;
+			transform: translate(-50%, 16px);
+		}
+		to {
+			opacity: 1;
+			transform: translate(-50%, 0);
+		}
+	}
+
+	.app-confirm-backdrop {
+		align-items: center;
+	}
+
+	/* Clear of the window's bottom edge. */
+	.app-toast-stack,
+	.admin-toast-stack {
+		bottom: 44px;
+	}
+
+	.msg-sheet {
+		bottom: 50%;
+		transform: translate(-50%, 50%);
+	}
+
+	@keyframes sheet-up {
+		from {
+			opacity: 0;
+			transform: translate(-50%, calc(50% + 12px));
+		}
+		to {
+			opacity: 1;
+			transform: translate(-50%, 50%);
+		}
+	}
+
+	.chat-menu-portal .msg-sheet {
+		bottom: 50%;
+	}
+}
+
+
+/* ==========================================================================
+   Wide screens
+   --------------------------------------------------------------------------
+   Above 1280px the framed window stops being generous and starts being small.
+   Everything below grows the frame and, inside it, the three measures that
+   actually decide whether a wide window feels used or merely stretched: the
+   rail, the reading column and the message column.
+
+   Sizes are stepped rather than fluid on purpose. A rail that grows with the
+   viewport ends up wider than its longest label and reads as padding; one that
+   jumps once, to a size chosen for the labels, does not.
+   ========================================================================== */
+@media (min-width: 1280px) {
+	.app-shell {
+		width: min(100%, 1180px);
+		height: min(100%, 960px);
+	}
+
+	.tabbar,
+	.tabbar.is-secondary {
+		width: 248px;
+		padding: 16px 12px calc(16px + var(--safe-bottom));
+	}
+
+	.auth-card,
+	.settings-body,
+	.request-list,
+	.invite-body,
+	.profile-page .profile-view,
+	.admin-body {
+		max-width: 700px;
+	}
+
+	.bubble {
+		max-width: min(68%, 520px);
+	}
+}
+
+
+@media (min-width: 1680px) {
+	.app-shell {
+		width: min(100%, 1440px);
+		height: min(100%, 1080px);
+	}
+
+	.tabbar,
+	.tabbar.is-secondary {
+		width: 268px;
+	}
+
+	.auth-card,
+	.settings-body,
+	.request-list,
+	.invite-body,
+	.profile-page .profile-view,
+	.admin-body {
+		max-width: 760px;
+	}
+}
+
+
+/* ==========================================================================
+   Owning the window
+   --------------------------------------------------------------------------
+   An installed desktop PWA and the Tauri desktop build both *are* the window,
+   so the frame is drawn twice — once by the OS and once by us. Drop ours and
+   let the shell fill everything it is given.
+
+   `html.native-window` is set by the desktop app's root layout; the media
+   query covers the PWA, which cannot set a class before first paint.
+   ========================================================================== */
+@media (min-width: 900px) {
+	html.native-window {
+		background: var(--bg);
+	}
+
+	html.native-window body {
+		padding: 0;
+	}
+
+	html.native-window .app-shell {
+		width: 100%;
+		max-width: none;
+		height: 100%;
+		max-height: 100%;
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+	}
+}
+
+
+@media (min-width: 900px) and (display-mode: standalone) {
+	body {
+		padding: 0;
+	}
+
+	.app-shell {
+		width: 100%;
+		height: 100%;
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+	}
+}
+
+
+/*
+ * With no frame there is no longer anything holding the message column to a
+ * readable width, so it holds itself: symmetric padding that grows with the
+ * window until the column hits its measure, then centres. Bubbles keep a
+ * percentage cap so short messages still hug their own side.
+ */
+@media (min-width: 1280px) {
+	.messages {
+		padding-left: max(32px, calc((100% - var(--read-max)) / 2));
+		padding-right: max(32px, calc((100% - var(--read-max)) / 2));
+	}
+
+	.composer {
+		width: min(100%, calc(var(--read-max) + 48px));
+		margin-inline: auto;
+	}
+}
+
+
+/*
+ * A full-window client on a 27" monitor puts the chat list in one very wide
+ * pane. Left alone the rows run the width of the desk; capped and centred they
+ * read as a column that happens to sit in a large window, which is what every
+ * desktop client that gets this right does. Only in the frameless case — inside
+ * the framed window the pane is already narrow enough.
+ */
+@media (min-width: 1280px) {
+	html.native-window .screen > .list,
+	html.native-window .screen > .list-filter,
+	html.native-window .screen > .list-coach {
+		width: 100%;
+		max-width: var(--list-max);
+		margin-inline: auto;
+	}
+}
+
+
+@media (min-width: 1280px) and (display-mode: standalone) {
+	.screen > .list,
+	.screen > .list-filter,
+	.screen > .list-coach {
+		width: 100%;
+		max-width: var(--list-max);
+		margin-inline: auto;
+	}
+}

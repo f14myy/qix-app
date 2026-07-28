@@ -1,0 +1,1069 @@
+/* ==========================================================================
+   Motion system.
+   --------------------------------------------------------------------------
+   A shared keyframe library, the utilities that drive cascading list
+   entrances, the palette cross-fade, and the reduced-motion escape hatch.
+
+   Screen-specific animations stay in their own stylesheet — this file only
+   holds what more than one screen uses. Timing tokens live in tokens.css.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   Shared keyframes
+   --------------------------------------------------------------------------
+   Named by what they do, not where they are used. Everything animates
+   `transform` and `opacity` only, so nothing here triggers layout.
+   ========================================================================== */
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes rise-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 10px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes rise-in-far {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 22px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes drop-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -10px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes slide-in-left {
+	from {
+		opacity: 0;
+		transform: translate3d(-14px, 0, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes slide-in-right {
+	from {
+		opacity: 0;
+		transform: translate3d(14px, 0, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes scale-in {
+	from {
+		opacity: 0;
+		transform: scale(0.94);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Overshoots — for elements that should feel physical. */
+@keyframes pop-in {
+	0% {
+		opacity: 0;
+		transform: scale(0.82);
+	}
+	60% {
+		opacity: 1;
+		transform: scale(1.04);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes pop-rise {
+	0% {
+		opacity: 0;
+		transform: translate3d(0, 12px, 0) scale(0.96);
+	}
+	70% {
+		opacity: 1;
+		transform: translate3d(0, -2px, 0) scale(1.01);
+	}
+	100% {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Ambient loops. Deliberately slow and low-contrast so they read as texture. */
+@keyframes breathe {
+	0%,
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	50% {
+		transform: scale(1.04);
+		opacity: 0.86;
+	}
+}
+
+@keyframes float-soft {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0);
+	}
+	50% {
+		transform: translate3d(0, -4px, 0);
+	}
+}
+
+@keyframes shimmer-sweep {
+	from {
+		background-position: -180% 0;
+	}
+	to {
+		background-position: 180% 0;
+	}
+}
+
+@keyframes ring-out {
+	0% {
+		opacity: 0.5;
+		transform: scale(0.9);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(1.55);
+	}
+}
+
+@keyframes nudge-x {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0);
+	}
+	25% {
+		transform: translate3d(-3px, 0, 0);
+	}
+	75% {
+		transform: translate3d(3px, 0, 0);
+	}
+}
+
+
+/* ==========================================================================
+   Entrance utilities
+   --------------------------------------------------------------------------
+   `both` on every one of these: the element must hold the first frame before
+   its delay elapses, otherwise a staggered list flashes fully-drawn for one
+   frame and then animates.
+   ========================================================================== */
+
+.anim-fade {
+	animation: fade-in var(--motion-enter) var(--ease-soft) both;
+}
+
+.anim-rise {
+	animation: rise-in var(--motion-enter) var(--ease-out) both;
+}
+
+.anim-rise-far {
+	animation: rise-in-far var(--motion-slower) var(--ease-out) both;
+}
+
+.anim-drop {
+	animation: drop-in var(--motion-enter) var(--ease-out) both;
+}
+
+.anim-scale {
+	animation: scale-in var(--motion-enter) var(--ease-out) both;
+}
+
+.anim-pop {
+	animation: pop-in var(--motion-slow) var(--ease-spring) both;
+}
+
+.anim-pop-rise {
+	animation: pop-rise var(--motion-slow) var(--ease-spring) both;
+}
+
+
+/* ── Cascades ───────────────────────────────────────────────────────────────
+   Put `.stagger` on a list and its children enter one after another. Done
+   with nth-child rather than an inline `--i` so markup stays untouched; the
+   cap is deliberate — past a dozen rows the delay is longer than the patience
+   of the person waiting, so everything after it enters together. */
+
+.stagger > * {
+	animation: rise-in var(--motion-enter) var(--ease-out) both;
+}
+
+.stagger > *:nth-child(1) {
+	animation-delay: 0ms;
+}
+.stagger > *:nth-child(2) {
+	animation-delay: calc(var(--stagger) * 1);
+}
+.stagger > *:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.stagger > *:nth-child(4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+.stagger > *:nth-child(5) {
+	animation-delay: calc(var(--stagger) * 4);
+}
+.stagger > *:nth-child(6) {
+	animation-delay: calc(var(--stagger) * 5);
+}
+.stagger > *:nth-child(7) {
+	animation-delay: calc(var(--stagger) * 6);
+}
+.stagger > *:nth-child(8) {
+	animation-delay: calc(var(--stagger) * 7);
+}
+.stagger > *:nth-child(n + 9) {
+	animation-delay: calc(var(--stagger) * var(--stagger-max));
+}
+
+
+/* ==========================================================================
+   Palette cross-fade
+   --------------------------------------------------------------------------
+   Switching theme, look or wallpaper rewrites a pile of custom properties at
+   once, and the whole app used to snap to the new colours in a single frame —
+   the most jarring transition in the product, on the one screen built for
+   trying them out.
+
+   The class is added by setThemePreference / setLookPreference and friends in
+   lib/theme.ts and removed once the window closes, so the cost is paid only
+   while switching. Only colour properties are listed: they interpolate
+   cheaply, and animating anything geometric here would fight every component's
+   own transition. `!important` is required to win against those.
+   ========================================================================== */
+
+html.palette-switching *,
+html.palette-switching *::before,
+html.palette-switching *::after {
+	transition:
+		background-color var(--motion-slow) var(--ease-soft),
+		border-color var(--motion-slow) var(--ease-soft),
+		color var(--motion-slow) var(--ease-soft),
+		fill var(--motion-slow) var(--ease-soft),
+		stroke var(--motion-slow) var(--ease-soft) !important;
+}
+
+/* The wallpaper is a background-image, which cannot tween — cross-fade the
+   layer instead so a wallpaper change is not a hard cut. */
+html.palette-switching .messages::before,
+html.palette-switching .chat-view::before {
+	animation: fade-in var(--motion-slow) var(--ease-soft) both;
+}
+
+
+/* ==========================================================================
+   Interaction polish
+   --------------------------------------------------------------------------
+   Applied broadly so new markup inherits the same feel without every screen
+   restating it. Components that define their own press behaviour keep it —
+   these only fill the gaps.
+   ========================================================================== */
+
+/* Keyboard focus should be obvious and should arrive, not appear. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+	transition: outline-offset var(--motion-fast) var(--ease-out);
+}
+
+/* Anything clickable gets a settle-back on release. */
+:where(button, .pressable, [role='button']):not(:disabled):active {
+	transition-duration: var(--motion-instant);
+}
+
+/* Disabled controls fade rather than blink out. */
+:where(button, input, select, textarea):disabled {
+	transition:
+		opacity var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+/* Images fade in once decoded instead of popping.
+   `.profile-banner-img` is deliberately absent: it has its own banner-zoom in
+   profile.css, and this file wins the cascade, so listing it here would silently
+   replace that animation. */
+.avatar,
+.att-image {
+	animation: fade-in var(--motion-slow) var(--ease-soft) both;
+}
+
+
+
+/* ==========================================================================
+   Motion, second pass
+   --------------------------------------------------------------------------
+   Everything above is the original system: entrances, cascades, the palette
+   cross-fade. What follows widens it — more ways for something to arrive, a
+   set of ambient loops, and the small reactions that make a surface feel
+   answerable rather than painted on.
+
+   Same rules as above: transform, opacity and filter only, nothing that
+   triggers layout, and every entrance carries `both` so it holds its first
+   frame through any delay.
+   ========================================================================== */
+
+
+/* ── More ways to arrive ────────────────────────────────────────────────── */
+
+/*
+ * Focus pulling into place. Costs a filter pass, so it is reserved for one or
+ * two elements at a time — a hero, a dialog — never a list.
+ */
+@keyframes blur-in {
+	from {
+		opacity: 0;
+		filter: blur(10px);
+		transform: scale(1.02);
+	}
+	to {
+		opacity: 1;
+		filter: blur(0);
+		transform: none;
+	}
+}
+
+/* A card that turns to face you. The perspective is on the keyframe rather
+   than the parent so the element stays independent of its container. */
+@keyframes swing-in {
+	from {
+		opacity: 0;
+		transform: perspective(900px) rotateX(-8deg) translate3d(0, 12px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: perspective(900px) rotateX(0) translate3d(0, 0, 0);
+	}
+}
+
+@keyframes tilt-in {
+	from {
+		opacity: 0;
+		transform: rotate(-1.6deg) scale(0.96);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* For rules, underlines and progress fills — anything that should be drawn
+   rather than revealed. Needs `transform-origin: left` at the call site. */
+@keyframes sweep-x {
+	from {
+		transform: scaleX(0);
+	}
+	to {
+		transform: scaleX(1);
+	}
+}
+
+@keyframes sweep-y {
+	from {
+		transform: scaleY(0);
+	}
+	to {
+		transform: scaleY(1);
+	}
+}
+
+/* An expanding panel that has a height to grow into. */
+@keyframes unfurl {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -6px, 0) scaleY(0.94);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes bounce-in {
+	0% {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+	45% {
+		opacity: 1;
+		transform: scale(1.08);
+	}
+	70% {
+		transform: scale(0.97);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+/* Something that came from a specific place — a menu from its trigger, a
+   tooltip from its anchor. Set `transform-origin` at the call site. */
+@keyframes emerge {
+	from {
+		opacity: 0;
+		transform: scale(0.9) translate3d(0, 4px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+/* ── Ambient loops ──────────────────────────────────────────────────────── */
+
+/* Slow enough to be felt rather than watched. Anything faster than a second
+   in a loop becomes a distraction on a screen someone is reading. */
+@keyframes glow-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 34%, transparent);
+	}
+	50% {
+		box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 0%, transparent);
+	}
+}
+
+@keyframes pulse-soft {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.55;
+	}
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* A large, very slow drift for background washes. The scale keeps the edges
+   of the gradient off-screen through the whole cycle. */
+@keyframes drift {
+	0% {
+		transform: translate3d(-2%, -1%, 0) scale(1.08);
+	}
+	50% {
+		transform: translate3d(2%, 2%, 0) scale(1.14);
+	}
+	100% {
+		transform: translate3d(-2%, -1%, 0) scale(1.08);
+	}
+}
+
+@keyframes stripe-flow {
+	from {
+		background-position: 0 0;
+	}
+	to {
+		background-position: 32px 0;
+	}
+}
+
+
+/* ── Reactions ──────────────────────────────────────────────────────────── */
+
+@keyframes shake-y {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0);
+	}
+	30% {
+		transform: translate3d(0, -3px, 0);
+	}
+	70% {
+		transform: translate3d(0, 3px, 0);
+	}
+}
+
+@keyframes wobble {
+	0%,
+	100% {
+		transform: rotate(0);
+	}
+	25% {
+		transform: rotate(-4deg);
+	}
+	75% {
+		transform: rotate(4deg);
+	}
+}
+
+/* A value that changed. The old number leaves upward, the new one follows —
+   applied to the incoming element only, so it reads as a roll. */
+@keyframes roll-up {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 60%, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Confirmation. Draws the tick rather than showing it, which is worth the
+   dash arithmetic for the one moment somebody is watching for it. */
+@keyframes draw-check {
+	from {
+		stroke-dashoffset: 24;
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+
+/* ==========================================================================
+   Utilities, second pass
+   ========================================================================== */
+
+.anim-blur {
+	animation: blur-in var(--motion-slower) var(--ease-out) both;
+}
+
+.anim-swing {
+	animation: swing-in var(--motion-slow) var(--ease-out) both;
+}
+
+.anim-tilt {
+	animation: tilt-in var(--motion-slow) var(--ease-spring) both;
+}
+
+.anim-bounce {
+	animation: bounce-in var(--motion-slow) var(--ease-spring) both;
+}
+
+.anim-emerge {
+	animation: emerge var(--motion) var(--ease-out) both;
+}
+
+.anim-unfurl {
+	animation: unfurl var(--motion) var(--ease-out) both;
+	transform-origin: top;
+}
+
+.anim-slide-left {
+	animation: slide-in-left var(--motion-enter) var(--ease-out) both;
+}
+
+.anim-slide-right {
+	animation: slide-in-right var(--motion-enter) var(--ease-out) both;
+}
+
+/* Hand-placed delays, for the two or three elements on a screen that should
+   arrive in a set order but are not siblings in one list. */
+.anim-delay-1 {
+	animation-delay: calc(var(--stagger) * 1);
+}
+.anim-delay-2 {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.anim-delay-3 {
+	animation-delay: calc(var(--stagger) * 3);
+}
+.anim-delay-4 {
+	animation-delay: calc(var(--stagger) * 4);
+}
+.anim-delay-5 {
+	animation-delay: calc(var(--stagger) * 5);
+}
+.anim-delay-6 {
+	animation-delay: calc(var(--stagger) * 6);
+}
+.anim-delay-8 {
+	animation-delay: calc(var(--stagger) * 8);
+}
+.anim-delay-12 {
+	animation-delay: calc(var(--stagger) * 12);
+}
+
+
+/* ── Cascade variants ───────────────────────────────────────────────────────
+   The base `.stagger` rises its children. These change what they do without
+   restating the delays, so a container can pick a flavour by swapping one
+   class. Each is (0,2,0) against the base rule's (0,1,1), so it wins. */
+
+.stagger.stagger-fade > * {
+	animation-name: fade-in;
+}
+
+.stagger.stagger-scale > * {
+	animation-name: scale-in;
+}
+
+.stagger.stagger-pop > * {
+	animation-name: pop-in;
+	animation-timing-function: var(--ease-spring);
+}
+
+.stagger.stagger-side > * {
+	animation-name: slide-in-left;
+}
+
+.stagger.stagger-drop > * {
+	animation-name: drop-in;
+}
+
+/* Two containers wanted a different rhythm than the default 26ms: a short
+   toolbar of four things reads better tighter, a page of cards looser. */
+.stagger-tight {
+	--stagger: 16ms;
+}
+
+.stagger-loose {
+	--stagger: 44ms;
+}
+
+/*
+ * The base cascade caps at eight children. Long lists — sessions, blocked
+ * users, admin rows — have more than that, and the flat tail past eight is a
+ * visible seam when only ten rows are on screen. Carry the ramp to fourteen
+ * for containers that opt in, then flatten.
+ */
+.stagger.stagger-long > *:nth-child(9) {
+	animation-delay: calc(var(--stagger) * 8);
+}
+.stagger.stagger-long > *:nth-child(10) {
+	animation-delay: calc(var(--stagger) * 9);
+}
+.stagger.stagger-long > *:nth-child(11) {
+	animation-delay: calc(var(--stagger) * 10);
+}
+.stagger.stagger-long > *:nth-child(12) {
+	animation-delay: calc(var(--stagger) * 11);
+}
+.stagger.stagger-long > *:nth-child(13) {
+	animation-delay: calc(var(--stagger) * 12);
+}
+.stagger.stagger-long > *:nth-child(n + 14) {
+	animation-delay: calc(var(--stagger) * 13);
+}
+
+
+/* ── Loading ────────────────────────────────────────────────────────────────
+   Two shapes of "not yet": a spinner where one thing is pending, a shimmer
+   where the shape of what is coming is already known. */
+
+.spinner {
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	border: 2px solid color-mix(in srgb, currentColor 22%, transparent);
+	border-top-color: currentColor;
+	border-radius: 50%;
+	animation: spin 640ms linear infinite;
+}
+
+.spinner-lg {
+	width: 28px;
+	height: 28px;
+	border-width: 3px;
+}
+
+/*
+ * A skeleton is a promise about layout, so it must be the size of the thing it
+ * stands in for — height and width come from the call site, only the surface
+ * is here.
+ */
+.skeleton {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+	background: var(--surface-sunken);
+}
+
+.skeleton::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		color-mix(in srgb, var(--text) 7%, transparent) 50%,
+		transparent 100%
+	);
+	background-size: 220% 100%;
+	animation: shimmer-sweep 1.4s var(--ease-soft) infinite;
+}
+
+
+/* ==========================================================================
+   Interaction polish, second pass
+   --------------------------------------------------------------------------
+   Broad rules at `:where()` specificity — zero — so any component that has an
+   opinion about hover, press or transition keeps it untouched and these only
+   reach the elements nobody has styled yet.
+   ========================================================================== */
+
+/*
+ * Hover lift for card-shaped things. Pointer-gated: on a touchscreen `:hover`
+ * sticks after a tap and leaves the card raised until something else is
+ * touched, which reads as a rendering fault.
+ */
+@media (hover: hover) and (pointer: fine) {
+	:where(a, button, [role='button']):where(.pressable, .lift):not(:disabled):hover {
+		transform: translate3d(0, -1px, 0);
+	}
+}
+
+:where(.pressable, .lift):not(:disabled) {
+	transition:
+		transform var(--motion) var(--ease-spring),
+		box-shadow var(--motion) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+:where(.pressable, .lift):not(:disabled):active {
+	transform: scale(0.985);
+}
+
+/*
+ * Icons inside a control should not scale with it — a 16px glyph shrinking by
+ * 1.5% is noise, and at small sizes it lands between pixels and blurs. Hold
+ * them still and let the surface do the moving.
+ */
+:where(button, a):active > svg {
+	transform: none;
+}
+
+/* Links underline from the left rather than appearing underlined. */
+:where(.link-anim) {
+	position: relative;
+	text-decoration: none;
+}
+
+:where(.link-anim)::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -2px;
+	height: 1px;
+	background: currentColor;
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform var(--motion) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	:where(.link-anim):hover::after {
+		transform: scaleX(1);
+	}
+}
+
+:where(.link-anim):focus-visible::after {
+	transform: scaleX(1);
+}
+
+/* ==========================================================================
+   Reduced motion
+   --------------------------------------------------------------------------
+   Honoured for both the OS setting and the in-app toggle. The blanket rule
+   catches everything above; the explicit lists below exist because a handful
+   of components set `animation` on a shorthand that the duration override
+   alone does not fully neutralise.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+
+html[data-reduce-motion='1'] *,
+html[data-reduce-motion='1'] *::before,
+html[data-reduce-motion='1'] *::after {
+	animation-duration: 0.01ms !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0.01ms !important;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none !important;
+	}
+}
+
+
+html[data-reduce-motion='1']::view-transition-old(root),
+html[data-reduce-motion='1']::view-transition-new(root) {
+	animation: none !important;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+	.screen,
+	.bubble-row,
+	.chat-row-wrap,
+	.brand-animate,
+	.empty-animate,
+	.empty-icon,
+	.msg-menu,
+	.msg-sheet,
+	.chat-overlay-sheet,
+	.jump-latest,
+	.jump-unread,
+	.menu-backdrop,
+	.reaction-chip,
+	.unread-badge.pop,
+	.typing-dots i,
+	.online-dot,
+	.chat-view,
+	.peer-link,
+	.peer-status,
+	.composer,
+	.pull-spinner,
+	.install-section,
+	.composer .send.recording,
+	.app-toast,
+	.app-confirm-backdrop,
+	.call-overlay,
+	.call-avatar-wrap.pulse .call-ring,
+	.call-btn.accept,
+	.call-status-live-dot,
+	.settings-card,
+	.profile-card,
+	.fab,
+	.stagger > *,
+	.anim-fade,
+	.anim-rise,
+	.anim-rise-far,
+	.anim-drop,
+	.anim-scale,
+	.anim-pop,
+	.anim-pop-rise,
+	.anim-blur,
+	.anim-swing,
+	.anim-tilt,
+	.anim-bounce,
+	.anim-emerge,
+	.anim-unfurl,
+	.anim-slide-left,
+	.anim-slide-right,
+	.spinner,
+	.skeleton::after,
+	.avatar,
+	.att-image {
+		animation: none !important;
+	}
+
+	/* A skeleton with no shimmer still has to read as pending, so the sunken
+	   surface stays and only the sweep goes. */
+	.skeleton::after {
+		opacity: 0;
+	}
+
+	:where(.pressable, .lift):hover,
+	:where(.pressable, .lift):active {
+		transform: none !important;
+	}
+
+	:where(.link-anim)::after {
+		transition: none !important;
+	}
+
+	.icon-btn:active,
+	.pressable:active,
+	.chat-row:active,
+	.user-row:active,
+	.btn:active,
+	.tab:active,
+	.composer .send:active {
+		transform: none !important;
+	}
+
+	/* A cross-fade nobody asked for is still motion. */
+	html.palette-switching *,
+	html.palette-switching *::before,
+	html.palette-switching *::after {
+		transition: none !important;
+	}
+}
+
+
+html[data-reduce-motion='1'] .screen,
+html[data-reduce-motion='1'] .bubble-row,
+html[data-reduce-motion='1'] .chat-row-wrap,
+html[data-reduce-motion='1'] .brand-animate,
+html[data-reduce-motion='1'] .empty-animate,
+html[data-reduce-motion='1'] .empty-icon,
+html[data-reduce-motion='1'] .msg-menu,
+html[data-reduce-motion='1'] .msg-sheet,
+html[data-reduce-motion='1'] .chat-overlay-sheet,
+html[data-reduce-motion='1'] .jump-latest,
+html[data-reduce-motion='1'] .jump-unread,
+html[data-reduce-motion='1'] .menu-backdrop,
+html[data-reduce-motion='1'] .reaction-chip,
+html[data-reduce-motion='1'] .unread-badge.pop,
+html[data-reduce-motion='1'] .composer,
+html[data-reduce-motion='1'] .chat-view,
+html[data-reduce-motion='1'] .peer-link,
+html[data-reduce-motion='1'] .peer-status,
+html[data-reduce-motion='1'] .pull-spinner,
+html[data-reduce-motion='1'] .install-section,
+html[data-reduce-motion='1'] .composer .send.recording,
+html[data-reduce-motion='1'] .app-toast,
+html[data-reduce-motion='1'] .app-confirm-backdrop,
+html[data-reduce-motion='1'] .settings-card,
+html[data-reduce-motion='1'] .profile-card,
+html[data-reduce-motion='1'] .fab,
+html[data-reduce-motion='1'] .online-dot,
+html[data-reduce-motion='1'] .typing-dots i,
+html[data-reduce-motion='1'] .call-overlay,
+html[data-reduce-motion='1'] .call-avatar-wrap.pulse .call-ring,
+html[data-reduce-motion='1'] .call-btn.accept,
+html[data-reduce-motion='1'] .call-status-live-dot,
+html[data-reduce-motion='1'] .stagger > *,
+html[data-reduce-motion='1'] .anim-fade,
+html[data-reduce-motion='1'] .anim-rise,
+html[data-reduce-motion='1'] .anim-rise-far,
+html[data-reduce-motion='1'] .anim-drop,
+html[data-reduce-motion='1'] .anim-scale,
+html[data-reduce-motion='1'] .anim-pop,
+html[data-reduce-motion='1'] .anim-pop-rise,
+html[data-reduce-motion='1'] .anim-blur,
+html[data-reduce-motion='1'] .anim-swing,
+html[data-reduce-motion='1'] .anim-tilt,
+html[data-reduce-motion='1'] .anim-bounce,
+html[data-reduce-motion='1'] .anim-emerge,
+html[data-reduce-motion='1'] .anim-unfurl,
+html[data-reduce-motion='1'] .anim-slide-left,
+html[data-reduce-motion='1'] .anim-slide-right,
+html[data-reduce-motion='1'] .spinner,
+html[data-reduce-motion='1'] .skeleton::after,
+html[data-reduce-motion='1'] .avatar,
+html[data-reduce-motion='1'] .att-image {
+	animation: none !important;
+}
+
+
+html[data-reduce-motion='1'] .skeleton::after {
+	opacity: 0;
+}
+
+
+html[data-reduce-motion='1'] :where(.pressable, .lift):hover,
+html[data-reduce-motion='1'] :where(.pressable, .lift):active {
+	transform: none !important;
+}
+
+
+html[data-reduce-motion='1'] :where(.link-anim)::after {
+	transition: none !important;
+}
+
+
+html[data-reduce-motion='1'].palette-switching *,
+html[data-reduce-motion='1'].palette-switching *::before,
+html[data-reduce-motion='1'].palette-switching *::after {
+	transition: none !important;
+}
+
+
+html[data-reduce-motion='1'] .icon-btn:active,
+html[data-reduce-motion='1'] .pressable:active,
+html[data-reduce-motion='1'] .chat-row:active,
+html[data-reduce-motion='1'] .user-row:active,
+html[data-reduce-motion='1'] .btn:active,
+html[data-reduce-motion='1'] .tab:active,
+html[data-reduce-motion='1'] .composer .send:active {
+	transform: none !important;
+}
+
+
+html[data-reduce-motion='1'] .coach-tip,
+html[data-reduce-motion='1'] .coach-tip-action,
+html[data-reduce-motion='1'] .app-toast {
+	animation: none !important;
+}
+
+
+html[data-reduce-motion='1'] .onboard-stage,
+html[data-reduce-motion='1'] .onboard-look,
+html[data-reduce-motion='1'] .ob-bubble,
+html[data-reduce-motion='1'] .onboard-logo,
+html[data-reduce-motion='1'] .onboard-title,
+html[data-reduce-motion='1'] .onboard-lead,
+html[data-reduce-motion='1'] .onboard-bullets li {
+	animation: none !important;
+}
+
+/* A light bar crossing a solid surface — used by the primary button on hover. */
+@keyframes sheen {
+	from {
+		transform: translate3d(-130%, 0, 0);
+	}
+	to {
+		transform: translate3d(130%, 0, 0);
+	}
+}
+
+/* Picking a colour swatch: overshoot, then settle on the selected resting size. */
+@keyframes swatch-pick {
+	0% {
+		transform: scale(1.06);
+	}
+	45% {
+		transform: scale(1.24);
+	}
+	100% {
+		transform: scale(1.06);
+	}
+}

@@ -1,0 +1,1033 @@
+/* ==========================================================================
+   Settings screens, install tip, invite, sessions, message requests.
+   ========================================================================== */
+
+
+.settings-body {
+	padding: 4px 0 calc(28px + var(--safe-bottom));
+	flex: 1;
+	overflow-y: auto;
+}
+
+
+.settings-section {
+	padding: 6px 16px 14px;
+}
+
+
+.settings-section h2 {
+	margin: 14px 4px 8px;
+	font-size: var(--fs-xs);
+	font-weight: var(--fw-semi);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: color-mix(in srgb, var(--text-muted) 80%, transparent);
+}
+
+
+/* Settings cards: hairline-bounded groups, no fill, no shadow. */
+.settings-card {
+	background: transparent;
+	border-radius: var(--radius);
+	border: 1px solid var(--hairline);
+	overflow: hidden;
+	animation: card-in var(--motion-enter) var(--ease-out) both;
+	transition: border-color var(--motion) var(--ease-soft);
+}
+
+
+@keyframes card-in {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+.settings-card.soft {
+	background: var(--surface-sunken);
+	border-color: transparent;
+}
+
+
+/* Inputs sit on the sunken card, so they need to step back up a level or the
+   field and its container share the same fill. */
+.settings-card.soft .field input,
+.settings-card.soft textarea,
+.settings-card.soft .profile-bio-input {
+	background: var(--bg-elevated);
+}
+
+
+.settings-card.pad {
+	padding: 16px;
+}
+
+
+.settings-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 12px 14px;
+	min-height: 52px;
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+}
+
+
+/* Rows whose control needs the full width — segmented pills, pickers. */
+.settings-row.stack {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 10px;
+}
+
+.settings-row.link-row:hover {
+	background: var(--surface-hover);
+}
+
+
+.settings-row.link-row:active {
+	background: var(--surface-press);
+	transform: scale(0.99);
+}
+
+
+.settings-row + .settings-row {
+	border-top: 1px solid var(--hairline);
+}
+
+
+.settings-row .label {
+	font-weight: var(--fw-medium);
+	font-size: var(--fs-md);
+	letter-spacing: -0.005em;
+}
+
+
+.settings-row .value {
+	color: var(--text-muted);
+	font-size: var(--fs-sm);
+}
+
+
+.install-section {
+	animation: empty-rise 480ms var(--ease-out) both;
+}
+
+
+.install-tip {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 16px;
+	border-radius: var(--radius);
+	background: var(--surface-sunken);
+	border: 1px solid var(--hairline);
+}
+
+
+.install-tip.installed {
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 14px;
+}
+
+
+.install-tip.installed p {
+	margin: 0;
+	font-size: 0.9rem;
+	font-weight: var(--fw-medium);
+	color: var(--accent);
+}
+
+
+.install-ico {
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--radius-sm);
+	background: var(--tint);
+	color: var(--accent);
+	flex-shrink: 0;
+}
+
+
+.install-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+
+.install-copy strong {
+	font-size: var(--fs-md);
+	font-weight: var(--fw-semi);
+	letter-spacing: -0.01em;
+}
+
+
+.install-copy p {
+	margin: 0;
+	font-size: var(--fs-sm);
+	color: var(--text-muted);
+	line-height: 1.45;
+}
+
+
+.install-dismiss {
+	align-self: flex-start;
+	min-height: 38px;
+	padding: 0 14px;
+	font-size: var(--fs-sm);
+}
+
+
+.settings-nav-row {
+	gap: 12px;
+}
+
+
+/* Nav icons stay monochrome; the accent is reserved for state, not decoration. */
+.settings-nav-icon {
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border-radius: var(--radius-sm);
+	background: transparent;
+	color: var(--text-muted);
+	flex-shrink: 0;
+	transition:
+		transform var(--motion-fast) var(--ease-soft),
+		color var(--motion) var(--ease-soft);
+}
+
+
+.settings-row.link-row:hover .settings-nav-icon {
+	color: var(--accent);
+}
+
+
+.settings-nav-chevron {
+	color: color-mix(in srgb, var(--text-muted) 60%, transparent);
+	margin-left: auto;
+	display: grid;
+	place-items: center;
+	transition:
+		transform var(--motion-fast) var(--ease-soft),
+		color var(--motion) var(--ease-soft);
+}
+
+
+.settings-row.link-row:active .settings-nav-icon {
+	transform: scale(0.94);
+}
+
+
+.settings-row.link-row:active .settings-nav-chevron {
+	transform: translateX(2px);
+	color: var(--text-muted);
+}
+
+
+.settings-section-hint {
+	margin: -2px 4px 12px;
+	padding: 0;
+	font-size: 0.84rem;
+	color: var(--text-muted);
+	line-height: 1.4;
+}
+
+
+/* ── Message requests ─────────────────────────────────────────────────────── */
+.request-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 10px var(--gutter) 0;
+}
+
+
+.request-card {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 14px;
+	border-radius: var(--radius);
+	border: 1px solid var(--hairline);
+	animation: card-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+.request-head {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+
+.request-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	flex: 1;
+}
+
+
+.request-meta strong {
+	font-size: var(--fs-md);
+	font-weight: var(--fw-semi);
+	letter-spacing: -0.01em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+
+.request-sub {
+	font-size: var(--fs-sm);
+	color: var(--text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+
+.request-note {
+	margin: 0;
+	padding: 10px 12px;
+	border-radius: var(--radius-sm);
+	background: var(--surface-sunken);
+	font-size: var(--fs-sm);
+	line-height: 1.45;
+	color: var(--text);
+	word-break: break-word;
+}
+
+
+.request-actions {
+	display: flex;
+	gap: 8px;
+}
+
+
+.request-actions .btn {
+	flex: 1;
+	min-height: 44px;
+}
+
+
+.blocked-row {
+	gap: 10px;
+}
+
+
+.blocked-user {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+	flex: 1;
+	color: inherit;
+	text-decoration: none;
+}
+
+
+.blocked-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+
+.blocked-meta .label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+
+.invite-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 18px;
+	padding-top: 12px;
+}
+
+
+.invite-lead {
+	margin: 0;
+	padding: 0 12px;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: var(--fs-md);
+	line-height: 1.5;
+	max-width: 32ch;
+}
+
+
+.invite-qr {
+	width: 220px;
+	height: 220px;
+	border-radius: var(--radius-lg);
+	background: #fff;
+	padding: 12px;
+	box-shadow: var(--elev-2);
+	object-fit: contain;
+}
+
+
+.invite-qr-placeholder {
+	width: 220px;
+	height: 220px;
+	border-radius: var(--radius-lg);
+	display: grid;
+	place-items: center;
+	background: var(--surface-sunken);
+	color: var(--text-muted);
+}
+
+
+.invite-url {
+	display: block;
+	width: 100%;
+	max-width: 28rem;
+	margin: 0;
+	padding: 12px 14px;
+	border-radius: var(--radius);
+	background: var(--surface-sunken);
+	word-break: break-all;
+	font-size: var(--fs-sm);
+	text-align: center;
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+
+
+.invite-copy-btn {
+	min-width: 160px;
+}
+
+
+.settings-form-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+
+.settings-form-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 14px;
+}
+
+
+.settings-form-actions .btn {
+	flex: 1;
+	min-width: 120px;
+}
+
+
+.session-row {
+	align-items: flex-start;
+}
+
+
+.session-row .btn-ghost {
+	min-height: 36px;
+	padding: 0 10px;
+	font-size: 0.84rem;
+}
+
+
+.session-logout-others .label {
+	width: 100%;
+	text-align: center;
+	font-weight: var(--fw-semi);
+}
+
+
+.recovery-code-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 6px;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 0.9rem;
+}
+
+
+.recovery-code-list code {
+	background: var(--bg-elevated);
+	border: 1px solid var(--hairline);
+	padding: 8px 12px;
+	border-radius: var(--radius-sm);
+	display: block;
+	letter-spacing: 0.04em;
+}
+
+
+/* Needs to beat .settings-card.soft, which is also two classes. */
+.settings-card.danger-card,
+.danger-card {
+	border-color: color-mix(in srgb, var(--danger) 26%, transparent);
+	background: color-mix(in srgb, var(--danger) 4%, transparent);
+}
+
+
+/* The data-reduce-motion rules live in one place — see "Reduced motion" below. */
+
+.settings-row.link-row {
+	text-decoration: none;
+	color: inherit;
+}
+
+
+button.settings-row {
+	width: 100%;
+	border: none;
+	background: transparent;
+	font: inherit;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+	border-radius: 0;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+
+button.settings-row.link-row .label {
+	color: var(--accent);
+}
+
+
+.blocked-banner {
+	margin: 14px 0 0;
+	padding: 10px 14px;
+	width: 100%;
+	border-radius: var(--radius-sm);
+	background: color-mix(in srgb, var(--danger) 10%, transparent);
+	color: var(--danger);
+	font-size: var(--fs-sm);
+	text-align: center;
+}
+
+
+.settings-profile-card {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 14px;
+	border-radius: var(--radius);
+	background: var(--surface-sunken);
+	border: 1px solid transparent;
+	text-decoration: none;
+	color: inherit;
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		border-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+	animation: card-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+.settings-profile-card:hover {
+	border-color: var(--hairline-strong);
+}
+
+
+.settings-profile-card:active {
+	transform: scale(0.99);
+}
+
+
+.settings-profile-copy {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+
+.settings-profile-copy strong {
+	font-size: 1.08rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+
+.settings-profile-copy span {
+	color: var(--text-muted);
+	font-size: 0.9rem;
+}
+
+
+.settings-profile-copy .hint {
+	font-size: 0.78rem;
+	margin-top: 3px;
+	color: var(--accent);
+	font-weight: var(--fw-medium);
+}
+
+
+.blocked-unblock-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 36px;
+	padding: 0 12px;
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-medium);
+	border-radius: var(--radius-pill);
+	background: transparent;
+	color: var(--accent);
+	border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+	transition: background-color var(--motion) var(--ease-soft);
+}
+
+
+.blocked-unblock-btn:hover {
+	background: var(--tint);
+}
+
+
+.recovery-gate {
+	z-index: 95;
+	align-items: center;
+}
+
+
+.recovery-sheet h2 {
+	margin: 0 0 6px;
+	font-size: var(--fs-lg);
+	font-weight: var(--fw-bold);
+	letter-spacing: var(--track-tight);
+}
+
+
+.recovery-sheet .recovery-code-list {
+	margin-top: 14px;
+}
+
+
+.recovery-actions {
+	display: flex;
+	gap: 8px;
+	margin: 14px 0;
+}
+
+
+.recovery-actions .btn {
+	flex: 1;
+	min-height: 44px;
+	font-size: var(--fs-sm);
+}
+
+
+.recovery-actions .btn-ghost {
+	background: var(--surface-sunken);
+	color: var(--text);
+}
+
+/* ── Invite landing (/invite/[code]) ───────────────────────────────────────── */
+.invite-landing {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+	padding: 48px 24px calc(28px + var(--safe-bottom));
+	max-width: 360px;
+	margin-inline: auto;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.invite-landing-copy {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	text-align: center;
+}
+
+.invite-landing-copy strong {
+	font-size: 1.25rem;
+	font-weight: var(--fw-bold);
+	letter-spacing: var(--track-tight);
+}
+
+.invite-landing .invite-lead {
+	margin-top: 10px;
+	padding: 0;
+}
+
+
+/* ==========================================================================
+   Motion
+   --------------------------------------------------------------------------
+   Rows cascade in rather than appearing as a block, and every tappable row
+   answers the press. Shared keyframes come from motion.css.
+   ========================================================================== */
+
+/* ── Row cascades ───────────────────────────────────────────────────────────
+   Scoped to direct children so a nested card does not restart the cascade,
+   and capped at eight: past that the delay outlasts the person waiting.
+
+   `backwards`, not `both`. The fill is here to hold the first frame through the
+   stagger delay, and that is all `backwards` does; `both` also keeps the
+   animation in charge of `transform` forever afterwards, which silently
+   disabled the `:active` press below on every settings row in the app. */
+.settings-card > .settings-row,
+.settings-card > .settings-nav-row,
+.settings-section > .settings-row,
+.settings-section > .settings-nav-row {
+	animation: rise-in var(--motion-enter) var(--ease-out) backwards;
+}
+
+.settings-card > *:nth-child(1),
+.settings-section > *:nth-child(1) {
+	animation-delay: 0ms;
+}
+.settings-card > *:nth-child(2),
+.settings-section > *:nth-child(2) {
+	animation-delay: calc(var(--stagger) * 1);
+}
+.settings-card > *:nth-child(3),
+.settings-section > *:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.settings-card > *:nth-child(4),
+.settings-section > *:nth-child(4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+.settings-card > *:nth-child(5),
+.settings-section > *:nth-child(5) {
+	animation-delay: calc(var(--stagger) * 4);
+}
+.settings-card > *:nth-child(6),
+.settings-section > *:nth-child(6) {
+	animation-delay: calc(var(--stagger) * 5);
+}
+.settings-card > *:nth-child(n + 7),
+.settings-section > *:nth-child(n + 7) {
+	animation-delay: calc(var(--stagger) * 6);
+}
+
+
+/* ── Row feedback ───────────────────────────────────────────────────────────
+   A settings list is mostly navigation, so the affordance is the chevron
+   leaning towards where you are about to go. */
+.settings-row,
+.settings-nav-row,
+.session-row,
+.blocked-row {
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-out);
+}
+
+.settings-nav-row:active,
+.settings-row:active {
+	transform: scale(0.985);
+}
+
+.settings-nav-chevron {
+	transition:
+		transform var(--motion) var(--ease-out),
+		color var(--motion) var(--ease-soft);
+}
+
+.settings-nav-row:active .settings-nav-chevron {
+	transform: translate3d(3px, 0, 0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.settings-nav-row:hover .settings-nav-chevron {
+		transform: translate3d(3px, 0, 0);
+	}
+}
+
+/* The icon tile lifts slightly so the row has depth on press. */
+.settings-nav-icon {
+	transition:
+		transform var(--motion) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft);
+}
+
+.settings-nav-row:active .settings-nav-icon {
+	transform: scale(1.08);
+}
+
+
+/* ── Lists that arrive after a fetch ────────────────────────────────────────
+   Message requests live in their own `.request-list`, so they get the springier
+   entrance. Sessions and blocked users are `.settings-row`s inside a card and
+   are already carried by the cascade above — giving them a second animation
+   here would lose to that rule's higher specificity and never run. */
+.request-card {
+	animation: pop-rise var(--motion-slow) var(--ease-spring) both;
+}
+
+.request-list > .request-card:nth-child(2) {
+	animation-delay: calc(var(--stagger) * 1);
+}
+.request-list > .request-card:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.request-list > .request-card:nth-child(n + 4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+
+.request-card {
+	transition:
+		transform var(--motion) var(--ease-out),
+		opacity var(--motion) var(--ease-soft);
+}
+
+.blocked-unblock-btn {
+	transition:
+		transform var(--motion-fast) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft);
+}
+
+.blocked-unblock-btn:active {
+	transform: scale(0.94);
+}
+
+
+/* ── Recovery codes ─────────────────────────────────────────────────────────
+   These appear once, in a moment that matters — worth a beat each. */
+.recovery-code-list > * {
+	animation: pop-in var(--motion-slow) var(--ease-spring) both;
+}
+
+.recovery-code-list > *:nth-child(2) {
+	animation-delay: 40ms;
+}
+.recovery-code-list > *:nth-child(3) {
+	animation-delay: 80ms;
+}
+.recovery-code-list > *:nth-child(4) {
+	animation-delay: 120ms;
+}
+.recovery-code-list > *:nth-child(5) {
+	animation-delay: 160ms;
+}
+.recovery-code-list > *:nth-child(6) {
+	animation-delay: 200ms;
+}
+.recovery-code-list > *:nth-child(7) {
+	animation-delay: 240ms;
+}
+.recovery-code-list > *:nth-child(8) {
+	animation-delay: 280ms;
+}
+
+
+/* ── Invite ─────────────────────────────────────────────────────────────────*/
+.invite-qr,
+.invite-qr-placeholder {
+	animation: pop-in var(--motion-slower) var(--ease-spring) both;
+}
+
+.invite-url,
+.invite-copy-btn {
+	animation: rise-in var(--motion-enter) 80ms var(--ease-out) backwards;
+}
+
+.invite-copy-btn {
+	transition:
+		transform var(--motion-fast) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft);
+}
+
+.invite-copy-btn:active {
+	transform: scale(0.96);
+}
+
+
+/* ── Destructive areas ──────────────────────────────────────────────────────
+   Enters last and from further away, so it is not the first thing the eye
+   lands on. */
+.danger-card {
+	animation: rise-in-far var(--motion-slower) 120ms var(--ease-out) both;
+}
+
+
+/* ==========================================================================
+   Settings motion, second pass
+   --------------------------------------------------------------------------
+   The cascade above moves the rows. What it never moved was everything
+   *between* the rows — the section headings, the hints, the profile card at
+   the top of the screen — so a settings page assembled itself around a set of
+   captions that were already there.
+   ========================================================================== */
+
+/*
+ * Headings lead their own section rather than arriving with it. The delay is
+ * shorter than the first row's, so the caption is readable by the time the
+ * rows underneath it settle.
+ */
+.settings-section h2 {
+	animation: slide-in-left var(--motion-enter) var(--ease-out) both;
+}
+
+
+.settings-section-hint {
+	animation: fade-in var(--motion-enter) calc(var(--stagger) * 2) var(--ease-soft) both;
+}
+
+
+/*
+ * The card at the top of the settings root is the only thing on the screen
+ * with a face on it, so it gets the entrance with depth rather than the flat
+ * rise every other card uses.
+ *
+ * `backwards` rather than `both`: the card is a link with a press transform of
+ * its own, and a forwards-filled animation would keep hold of `transform` for
+ * the life of the element and stop that press from ever registering. (It
+ * already did — the `card-in` this replaces was filled `both`.)
+ */
+.settings-profile-card {
+	animation: swing-in var(--motion-slower) var(--ease-out) backwards;
+	transform-origin: top center;
+}
+
+
+/*
+ * Hover states matter more than they used to: the desktop build fills the
+ * window, and settings is now a pointer-first screen rather than a thumb-first
+ * one. Gated on a fine pointer — on a touchscreen `:hover` sticks after a tap
+ * and leaves a row lit until something else is touched.
+ */
+@media (hover: hover) and (pointer: fine) {
+	.settings-nav-row:hover .settings-nav-icon {
+		transform: scale(1.06);
+	}
+
+	.settings-card:hover {
+		border-color: color-mix(in srgb, var(--accent) 18%, var(--hairline));
+	}
+}
+
+
+.settings-card {
+	transition:
+		border-color var(--motion-slow) var(--ease-soft),
+		background-color var(--motion-slow) var(--ease-soft),
+		box-shadow var(--motion-slow) var(--ease-soft);
+}
+
+
+/* ── Session and blocked lists ──────────────────────────────────────────────
+   Both are `.settings-row`s inside a card, so the cascade above already
+   carries their entrance. What they were missing is the press: they each hold
+   a destructive button, and a row that does not answer a tap invites a second
+   one. */
+
+.session-row .btn-ghost,
+.blocked-row .btn-ghost {
+	transition:
+		transform var(--motion-fast) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft);
+}
+
+
+.session-row .btn-ghost:active,
+.blocked-row .btn-ghost:active {
+	transform: scale(0.94);
+}
+
+
+/* ── Invite ─────────────────────────────────────────────────────────────────
+   The QR pops, the URL rises. The lead paragraph above them had nothing, which
+   left the one line explaining the screen as the only static element on it. */
+
+.invite-lead {
+	animation: rise-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+.invite-landing-copy {
+	animation: rise-in var(--motion-enter) calc(var(--stagger) * 2) var(--ease-out) both;
+}
+
+
+/*
+ * No hover transform on the QR itself: `.invite-qr` enters with `pop-in` and
+ * `animation-fill-mode: both`, and a filled animation keeps ownership of every
+ * property it touched — a later `transform` on hover would simply never apply.
+ * The frame around it is free, so that is what reacts.
+ */
+.invite-qr {
+	transition: box-shadow var(--motion-slow) var(--ease-soft);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+	.invite-qr:hover {
+		box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 16%, transparent);
+	}
+}
+
+
+/* ── Recovery codes ─────────────────────────────────────────────────────────
+   Each code is copyable, and the only feedback for a copy was the toast. */
+
+.recovery-code-list code {
+	transition:
+		transform var(--motion-fast) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft);
+}
+
+
+.recovery-code-list code:active {
+	transform: scale(0.96);
+}
+
+
+/* ── Destructive areas ──────────────────────────────────────────────────────
+   The danger card enters last and from further away. Its button now answers a
+   hover with warmth rather than only on press — on a screen this consequential
+   the control should be unmistakable before it is touched, not after. */
+
+.danger-card .btn {
+	transition:
+		transform var(--motion-fast) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft),
+		box-shadow var(--motion-slow) var(--ease-soft);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+	.danger-card .btn:hover {
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 14%, transparent);
+	}
+}
+
+
+.danger-card .btn:active {
+	transform: scale(0.97);
+}

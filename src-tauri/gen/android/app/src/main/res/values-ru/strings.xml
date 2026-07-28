@@ -1,0 +1,13 @@
+<resources>
+    <string name="channel_messages">Сообщения</string>
+    <string name="channel_service">Фоновое соединение</string>
+    <string name="service_running">Qix следит за новыми сообщениями</string>
+
+    <string name="notification_new_message">Новое сообщение</string>
+    <string name="notification_message_request">Новая заявка в переписку</string>
+    <string name="notification_incoming_call">Входящий звонок</string>
+    <string name="notification_encrypted">Зашифрованное сообщение</string>
+    <string name="notification_voice">Голосовое сообщение</string>
+    <string name="notification_video">Видео</string>
+    <string name="notification_photo">Фото</string>
+</resources>

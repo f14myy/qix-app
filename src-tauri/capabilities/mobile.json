@@ -1,0 +1,8 @@
+{
+	"$schema": "../gen/schemas/mobile-schema.json",
+	"identifier": "mobile",
+	"description": "Phone-only capabilities. The haptics plugin is not compiled on desktop, so its permissions cannot live in the default capability.",
+	"platforms": ["android", "iOS"],
+	"windows": ["main"],
+	"permissions": ["haptics:default"]
+}

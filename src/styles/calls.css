@@ -1,0 +1,628 @@
+/* ==========================================================================
+   Voice and video call overlay.
+   ========================================================================== */
+
+
+.call-head-btn {
+	color: var(--text);
+}
+
+
+.call-head-btn:hover,
+.call-head-btn:focus-visible {
+	color: var(--accent);
+	background: var(--tint);
+}
+
+
+/* ── Calls ──────────────────────────────────────────────────────────────────
+   The overlay shell itself is defined once, further down. */
+.call-overlay.video {
+	background: #05080c;
+}
+
+
+.call-remote-video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	background: #000;
+}
+
+
+.call-local-video {
+	position: absolute;
+	top: calc(16px + var(--safe-top));
+	right: 16px;
+	width: 112px;
+	height: 160px;
+	object-fit: cover;
+	border-radius: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	background: #111;
+	z-index: 2;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+
+.call-local-video.hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+
+
+.call-local-placeholder {
+	position: absolute;
+	top: calc(16px + var(--safe-top));
+	right: 16px;
+	width: 112px;
+	height: 160px;
+	border-radius: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	background: rgba(18, 24, 32, 0.92);
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+
+.call-stage {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin-top: 48px;
+	text-align: center;
+}
+
+
+.call-avatar-wrap {
+	position: relative;
+	width: 104px;
+	height: 104px;
+	margin-bottom: 8px;
+	display: grid;
+	place-items: center;
+}
+
+
+.call-avatar-wrap > .avatar-wrap {
+	position: relative;
+	z-index: 1;
+}
+
+
+.call-ring {
+	position: absolute;
+	inset: -6px;
+	border-radius: 50%;
+	border: 1.5px solid color-mix(in srgb, var(--accent) 55%, rgba(255, 255, 255, 0.35));
+	opacity: 0;
+	pointer-events: none;
+}
+
+
+/* .call-avatar-wrap.pulse .call-ring and its keyframes are defined once, with
+   the rest of the call overlay further down. */
+
+.call-name {
+	margin: 4px 0 0;
+	font-size: 1.5rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+
+.call-status {
+	margin: 0;
+	min-height: 1.35em;
+	color: rgba(244, 247, 248, 0.72);
+	font-size: 0.98rem;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+
+.call-kind {
+	font-size: var(--fs-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: rgba(244, 247, 248, 0.45);
+}
+
+
+.call-end-link {
+	margin-top: 4px;
+	border: none;
+	background: transparent;
+	color: #ff8d8f;
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+	padding: 4px 8px;
+}
+
+
+.call-actions {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	gap: 28px;
+}
+
+
+.call-action {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	min-width: 68px;
+}
+
+
+.call-btn-label {
+	font-size: var(--fs-xs);
+	color: rgba(244, 247, 248, 0.62);
+	letter-spacing: 0.01em;
+	text-align: center;
+	line-height: 1.2;
+}
+
+
+.call-btn {
+	width: 64px;
+	height: 64px;
+	border: none;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	color: #fff;
+	background: rgba(255, 255, 255, 0.12);
+	backdrop-filter: blur(8px);
+	transition: transform 160ms var(--ease-out), background 160ms ease, box-shadow 160ms ease;
+}
+
+
+.call-btn:active {
+	transform: scale(0.94);
+}
+
+
+.call-btn:disabled {
+	opacity: 0.55;
+}
+
+
+.call-btn.accept {
+	background: color-mix(in srgb, var(--accent) 45%, #2fbf71);
+	box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 40%, transparent);
+	animation: call-accept-pulse 1.6s ease-out infinite;
+}
+
+
+@keyframes call-accept-pulse {
+	0% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, #2fbf71 45%, transparent);
+	}
+	70% {
+		box-shadow: 0 0 0 14px transparent;
+	}
+	100% {
+		box-shadow: 0 0 0 0 transparent;
+	}
+}
+
+
+.call-btn.reject {
+	background: #e5484d;
+}
+
+
+.call-btn.mute.on,
+.call-btn.cam.on {
+	background: rgba(255, 255, 255, 0.28);
+}
+
+
+.call-overlay.video .call-stage {
+	margin-top: auto;
+	margin-bottom: 12px;
+	text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+
+
+.call-overlay.video .call-btn-label,
+.call-overlay.video .call-kind,
+.call-overlay.video .call-status {
+	text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+}
+
+
+/* ==========================================================================
+   Modern Premium Call Overlay & WebRTC UI
+   ========================================================================== */
+
+.call-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	background: #0b1014;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	padding: calc(36px + var(--safe-top)) 24px calc(44px + var(--safe-bottom));
+	color: #ffffff;
+	animation: call-overlay-in var(--motion-slow) var(--ease-out) both;
+	user-select: none;
+	overflow: hidden;
+}
+
+
+@keyframes call-overlay-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+
+/* Ambient glow retired — the ring pulse already signals "ringing". */
+.call-ambient-glow {
+	display: none;
+}
+
+
+.call-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	margin-top: auto;
+	margin-bottom: auto;
+	z-index: 2;
+	width: 100%;
+}
+
+
+.call-avatar-wrap {
+	position: relative;
+	margin-bottom: 24px;
+	display: grid;
+	place-items: center;
+}
+
+
+.call-avatar-wrap.pulse .call-ring {
+	position: absolute;
+	inset: -16px;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	animation: call-ring-pulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+	pointer-events: none;
+}
+
+
+.call-avatar-wrap.pulse .call-ring.delay {
+	animation-delay: 600ms;
+}
+
+
+@keyframes call-ring-pulse {
+	0% {
+		transform: scale(0.85);
+		opacity: 0.9;
+	}
+	100% {
+		transform: scale(1.45);
+		opacity: 0;
+	}
+}
+
+
+.call-kind {
+	font-size: var(--fs-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: rgba(255, 255, 255, 0.45);
+	font-weight: var(--fw-semi);
+	margin: 0 0 8px;
+}
+
+
+.call-name {
+	font-size: 1.6rem;
+	font-weight: var(--fw-bold);
+	letter-spacing: -0.025em;
+	margin: 0 0 10px;
+	color: #ffffff;
+}
+
+
+.call-status {
+	font-size: var(--fs-sm);
+	color: rgba(255, 255, 255, 0.72);
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	background: rgba(255, 255, 255, 0.08);
+	padding: 5px 14px;
+	border-radius: var(--radius-pill);
+	font-variant-numeric: tabular-nums;
+}
+
+
+.call-status-live-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: #4caf50;
+	animation: live-dot-pulse 1.6s ease-in-out infinite;
+}
+
+
+@keyframes live-dot-pulse {
+	0%, 100% { opacity: 1; transform: scale(1); }
+	50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+
+.call-actions {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 28px;
+	z-index: 2;
+	width: 100%;
+	padding-bottom: 12px;
+}
+
+
+.call-action {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+}
+
+
+.call-btn {
+	width: 62px;
+	height: 62px;
+	border-radius: 50%;
+	border: none;
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.1);
+	transition:
+		transform var(--motion-fast) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+	-webkit-tap-highlight-color: transparent;
+}
+
+
+.call-btn:hover {
+	background: rgba(255, 255, 255, 0.16);
+}
+
+
+.call-btn:active {
+	transform: scale(0.93);
+}
+
+
+.call-btn.accept {
+	background: #37a24a;
+	animation: accept-btn-pulse 2s ease-in-out infinite;
+}
+
+
+@keyframes accept-btn-pulse {
+	0%, 100% { box-shadow: 0 0 0 0 rgba(55, 162, 74, 0.5); }
+	70% { box-shadow: 0 0 0 14px rgba(55, 162, 74, 0); }
+}
+
+
+.call-btn.reject {
+	background: #d93b3b;
+}
+
+
+.call-btn.mute.on,
+.call-btn.cam.on {
+	background: rgba(255, 255, 255, 0.9);
+	color: #101820;
+}
+
+
+.call-btn-label {
+	font-size: var(--fs-xs);
+	color: rgba(255, 255, 255, 0.6);
+	font-weight: var(--fw-regular);
+}
+
+
+/* Video mode styles */
+.call-overlay.video .call-remote-video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	z-index: 0;
+}
+
+
+.call-overlay.video .call-local-video {
+	position: absolute;
+	top: calc(20px + var(--safe-top));
+	right: 20px;
+	width: 110px;
+	height: 155px;
+	border-radius: 16px;
+	object-fit: cover;
+	z-index: 10;
+	border: 2px solid rgba(255, 255, 255, 0.25);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	background: #000000;
+}
+
+
+/* ==========================================================================
+   Motion
+   --------------------------------------------------------------------------
+   The call overlay takes over the whole screen, so its movement carries the
+   state: what is happening, and whether the other side is there yet. The
+   existing ring pulse and accept pulse stay as they are — this adds the
+   transitions between phases and the response to every control.
+   ========================================================================== */
+
+/* ── Phase changes ──────────────────────────────────────────────────────────
+   The stage shifts as a call moves from ringing to connected, so the change
+   is felt without reading the label. */
+.call-stage {
+	transition:
+		transform var(--motion-slower) var(--ease-out),
+		opacity var(--motion-slow) var(--ease-soft);
+}
+
+/* Connected: the avatar block gives room to the video and the controls. */
+.call-overlay.active .call-stage {
+	transform: translate3d(0, -8px, 0);
+}
+
+.call-name,
+.call-kind {
+	animation: rise-in var(--motion-slow) var(--ease-out) backwards;
+}
+
+.call-name {
+	animation-delay: 60ms;
+}
+
+/* The status line changes text often — cross-fade rather than snap. */
+.call-status {
+	transition: color var(--motion) var(--ease-soft);
+	animation: fade-in var(--motion-slow) 120ms var(--ease-soft) both;
+}
+
+.call-avatar-wrap {
+	animation: pop-in var(--motion-slower) var(--ease-spring) backwards;
+	transition: transform var(--motion-slower) var(--ease-out);
+}
+
+/* Once media is flowing the avatar recedes; it is no longer the subject. */
+.call-overlay.active .call-avatar-wrap {
+	transform: scale(0.92);
+}
+
+
+/* ── Controls ───────────────────────────────────────────────────────────────
+   Big targets that must feel certain under a thumb, on a screen where a
+   mis-tap ends a conversation. */
+.call-actions {
+	animation: rise-in-far var(--motion-slower) 100ms var(--ease-out) both;
+}
+
+/* `background`, not `background-color`: the states above are set with the
+   shorthand, and narrowing it here would stop them transitioning at all. */
+.call-btn {
+	transition:
+		transform var(--motion) var(--ease-spring),
+		background var(--motion) var(--ease-soft),
+		box-shadow var(--motion) var(--ease-soft);
+}
+
+/* Disabled buttons no longer squish — pressing one does nothing, and pretending
+   otherwise during a call is worse than no feedback. */
+.call-btn:not(:disabled):active {
+	transform: scale(0.92);
+}
+
+.call-btn-label {
+	transition: opacity var(--motion) var(--ease-soft);
+}
+
+/* Toggled state is a colour change; the scale nudge confirms the tap landed. */
+.call-btn.mute.on,
+.call-btn.cam.on {
+	transform: scale(1.04);
+}
+
+
+/* ── Video ──────────────────────────────────────────────────────────────────
+   Remote video replaces the avatar, so it fades up instead of cutting in. */
+.call-remote-video {
+	animation: fade-in var(--motion-slower) var(--ease-soft) both;
+}
+
+.call-local-video {
+	animation: pop-in var(--motion-slow) 160ms var(--ease-spring) backwards;
+	transition:
+		opacity var(--motion-slow) var(--ease-soft),
+		transform var(--motion-slow) var(--ease-out);
+}
+
+.call-local-video.hidden {
+	opacity: 0;
+	transform: scale(0.9);
+}
+
+.call-local-placeholder {
+	animation: scale-in var(--motion) var(--ease-out) both;
+}
+
+/* ── Calls in motion, second pass ────────────────────────────────────────── */
+
+.call-head-btn {
+	transition: color var(--motion) var(--ease-soft), transform var(--motion-fast) var(--ease-spring);
+}
+.call-head-btn:active {
+	transform: scale(0.88);
+}
+
+/* Each action column arrives after the row it sits in. */
+.call-action {
+	--stagger: 60ms;
+	animation: pop-rise var(--motion-slow) var(--ease-spring) backwards;
+	animation-delay: 160ms;
+}
+.call-action:nth-child(2) {
+	animation-delay: calc(160ms + var(--stagger));
+}
+.call-action:nth-child(3) {
+	animation-delay: calc(160ms + var(--stagger) * 2);
+}
+.call-action:nth-child(4) {
+	animation-delay: calc(160ms + var(--stagger) * 3);
+}
+.call-action:nth-child(n + 5) {
+	animation-delay: calc(160ms + var(--stagger) * 4);
+}
+.call-btn-label {
+	animation: fade-in var(--motion-slower) 320ms var(--ease-soft) backwards;
+}
+
+.call-end-link {
+	animation: fade-in var(--motion-slower) 400ms var(--ease-soft) backwards;
+	transition: color var(--motion) var(--ease-soft), transform var(--motion-fast) var(--ease-soft);
+}
+.call-end-link:active {
+	transform: scale(0.96);
+}

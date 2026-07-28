@@ -1,0 +1,1241 @@
+/* ==========================================================================
+   Profile view and profile editor, badges.
+   ========================================================================== */
+
+
+.profile-screen {
+	position: relative;
+}
+
+
+.profile-view {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	padding: 32px 24px;
+	gap: 8px;
+	text-align: left;
+}
+
+
+.profile-name {
+	margin: 12px 0 0;
+	font-size: 1.4rem;
+	letter-spacing: -0.02em;
+}
+
+
+.profile-user {
+	margin: 0;
+	color: var(--text-muted);
+}
+
+
+.profile-bio {
+	margin: 12px 0 20px;
+	color: var(--text);
+	max-width: 360px;
+	line-height: 1.4;
+}
+
+
+.profile-page {
+	position: relative;
+	flex: 1;
+	overflow: auto;
+}
+
+
+.profile-page .profile-banner {
+	height: calc(168px + var(--header-h) + var(--safe-top));
+	box-sizing: border-box;
+}
+
+
+.profile-banner {
+	position: relative;
+	height: 168px;
+	margin: 0;
+	overflow: hidden;
+	background: linear-gradient(
+		160deg,
+		color-mix(in srgb, var(--accent) 22%, var(--bg)),
+		var(--bg)
+	);
+	animation: banner-reveal var(--motion-slow) var(--ease-out) both;
+}
+
+
+.profile-banner-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	animation: banner-zoom var(--motion-slow) var(--ease-out) both;
+}
+
+
+.profile-banner-shade {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background:
+		linear-gradient(
+			180deg,
+			color-mix(in srgb, #000 38%, transparent) 0%,
+			transparent 42%,
+			color-mix(in srgb, var(--bg) 35%, transparent) 78%,
+			var(--bg) 100%
+		);
+}
+
+
+@keyframes banner-reveal {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+
+@keyframes banner-zoom {
+	from {
+		transform: scale(1.03);
+		opacity: 0;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+
+.profile-banner[data-banner='teal'] {
+	background: linear-gradient(135deg, #0f3d38, #1a7a6d 58%, #0b2a27);
+}
+
+
+.profile-banner[data-banner='charcoal'] {
+	background: linear-gradient(150deg, #1a1c1e, #2d3238 60%, #121416);
+}
+
+
+.profile-banner[data-banner='ember'] {
+	background: linear-gradient(140deg, #3a1d12, #c05621 60%, #2a140c);
+}
+
+
+.profile-banner[data-banner='ocean'] {
+	background: linear-gradient(145deg, #0d2744, #2b6cb0 55%, #0a1c30);
+}
+
+
+.profile-banner[data-banner='forest'] {
+	background: linear-gradient(145deg, #12261a, #2f855a 55%, #0d1a12);
+}
+
+
+.profile-banner[data-banner='sunset'] {
+	background: linear-gradient(145deg, #3a2410, #c05621 42%, #d69e2e 78%, #2a1808);
+}
+
+
+.profile-banner[data-banner='mist'] {
+	background: linear-gradient(145deg, #4a5568, #a0aec0 52%, #2d3748);
+}
+
+
+.profile-banner[data-banner='night'] {
+	background: linear-gradient(160deg, #05070a, #12161c 55%, #0a0c10);
+}
+
+
+.name-with-badges {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	max-width: 100%;
+	vertical-align: middle;
+}
+
+
+.name-with-badges-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+
+.badge-mark {
+	display: inline-flex;
+	flex-shrink: 0;
+	line-height: 0;
+}
+
+
+.badge-labels {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+	margin: 10px 0 4px;
+	width: 100%;
+}
+
+
+.badge-label-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 5px 10px;
+	border-radius: var(--radius-pill);
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-medium);
+	color: var(--badge-color);
+	background: color-mix(in srgb, var(--badge-color) 10%, transparent);
+}
+
+
+.profile-page .profile-view {
+	position: relative;
+	z-index: 1;
+	margin-top: -52px;
+	padding: 0 20px calc(28px + var(--safe-bottom));
+	gap: 0;
+	align-items: stretch;
+	text-align: left;
+}
+
+
+.profile-identity {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 12px;
+	min-height: 56px;
+	animation: profile-rise var(--motion-enter) var(--ease-out) both;
+}
+
+
+@keyframes profile-rise {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+.profile-avatar-stage {
+	display: grid;
+	place-items: center;
+	padding: 4px;
+	border-radius: 50%;
+	background: var(--bg-elevated);
+	flex-shrink: 0;
+	transition: box-shadow var(--motion) var(--ease-soft);
+}
+
+
+.profile-avatar-stage.online {
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+
+.profile-avatar-stage .avatar,
+.profile-avatar-stage .avatar-wrap {
+	border-radius: 50%;
+}
+
+
+.profile-edit-pill {
+	min-height: 38px;
+	padding: 0 14px;
+	border-radius: var(--radius-pill);
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-semi);
+	flex-shrink: 0;
+	margin-bottom: 6px;
+}
+
+
+.profile-edit-pill.btn-ghost {
+	background: var(--surface-sunken);
+	color: var(--text);
+}
+
+
+.profile-edit-pill.btn-ghost:hover {
+	background: var(--surface-hover);
+	color: var(--accent);
+}
+
+
+.profile-copy {
+	margin-top: 12px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 2px;
+	animation: profile-rise var(--motion-enter) 40ms var(--ease-out) both;
+}
+
+
+.profile-name {
+	margin: 0;
+	font-family: var(--font-display, inherit);
+	font-size: 1.5rem;
+	font-weight: var(--fw-bold);
+	letter-spacing: -0.03em;
+	line-height: 1.15;
+	max-width: 100%;
+}
+
+
+.profile-user-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin: 2px 0 0;
+	padding: 3px 8px 3px 0;
+	border: none;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--text-muted);
+	font-size: 0.92rem;
+}
+
+
+.profile-user-btn:hover {
+	color: var(--accent);
+}
+
+/* Confirms the copy landed. */
+.profile-user-btn.copied {
+	color: var(--accent);
+}
+
+
+.profile-status {
+	margin: 4px 0 0;
+	min-height: 1.1em;
+}
+
+
+.profile-badges {
+	margin-top: 14px;
+}
+
+
+.profile-badges .badge-labels {
+	justify-content: flex-start;
+	margin: 0;
+}
+
+
+.profile-card {
+	margin-top: 12px;
+	padding: 14px 16px;
+	border-radius: var(--radius);
+	background: transparent;
+	border: 1px solid var(--hairline);
+	animation: card-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+.profile-bio-card {
+	padding: 14px 16px;
+}
+
+
+.profile-bio-card.empty {
+	padding: 12px 16px;
+	background: color-mix(in srgb, var(--bg-muted) 50%, transparent);
+	border-style: dashed;
+}
+
+
+.profile-bio {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	max-width: none;
+	line-height: 1.55;
+	white-space: pre-wrap;
+	word-break: break-word;
+	font-size: 0.95rem;
+	color: var(--text);
+}
+
+
+.profile-bio-empty {
+	color: var(--text-muted);
+	font-style: italic;
+	text-decoration: none;
+}
+
+
+.profile-bio-empty:hover {
+	color: var(--accent);
+}
+
+
+.profile-badges-card {
+	padding: 12px 14px;
+}
+
+
+.profile-info-card {
+	padding: 0;
+	overflow: hidden;
+}
+
+
+.profile-info-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 13px 16px;
+	font-size: 0.9rem;
+}
+
+
+.profile-info-icon {
+	display: grid;
+	place-items: center;
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+
+.profile-info-label {
+	color: var(--text-muted);
+	flex: 1;
+}
+
+
+.profile-info-value {
+	font-weight: var(--fw-medium);
+	color: var(--text);
+}
+
+
+.profile-actions {
+	width: 100%;
+	margin-top: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+
+.profile-action-secondary {
+	justify-content: center;
+	gap: 8px;
+}
+
+
+.profile-edit-hero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+	padding: 20px 16px 8px;
+}
+
+
+.profile-edit-cover {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	padding: 0 0 4px;
+	margin-bottom: 4px;
+}
+
+
+.profile-banner-edit {
+	width: 100%;
+	height: 156px;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+	border-radius: 0;
+	overflow: hidden;
+}
+
+
+.profile-banner-cam {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	background: color-mix(in srgb, #000 28%, transparent);
+	color: #fff;
+	opacity: 0.85;
+	transition: opacity 160ms var(--ease-out);
+}
+
+
+.profile-banner-edit:hover .profile-banner-cam,
+.profile-banner-edit:focus-visible .profile-banner-cam {
+	opacity: 1;
+}
+
+
+.profile-avatar-edit-overlap {
+	margin-top: -56px;
+	z-index: 1;
+	width: 120px;
+	height: 120px;
+	box-sizing: border-box;
+	padding: 4px;
+	border-radius: 50%;
+	background: var(--bg-elevated);
+	border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+
+.profile-avatar-edit-overlap .avatar,
+.profile-avatar-edit-overlap .profile-avatar-preview {
+	display: grid;
+	place-items: center;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	width: 112px;
+	height: 112px;
+	border-radius: 50%;
+}
+
+
+.profile-avatar-edit-overlap .profile-avatar-cam {
+	right: 6px;
+	bottom: 6px;
+}
+
+
+.profile-avatar-edit {
+	position: relative;
+	width: 112px;
+	height: 112px;
+}
+
+
+.profile-avatar-preview {
+	width: 112px;
+	height: 112px;
+	border-radius: 50%;
+	object-fit: cover;
+	display: block;
+}
+
+
+.profile-avatar-cam {
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
+	width: 36px;
+	height: 36px;
+	display: grid;
+	place-items: center;
+	border: 2px solid var(--bg-elevated);
+	border-radius: 50%;
+	background: var(--accent);
+	color: #fff;
+	padding: 0;
+}
+
+
+.profile-avatar-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px;
+	padding: 0 16px;
+}
+
+
+.profile-remove-avatar {
+	min-height: 36px;
+	padding: 0 12px;
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-medium);
+	border-radius: var(--radius-pill);
+	background: transparent;
+	color: var(--danger);
+	border: none;
+	transition: background-color var(--motion) var(--ease-soft);
+}
+
+
+.profile-remove-avatar:hover {
+	background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+
+.profile-action-block {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 46px;
+	padding: 0 20px;
+	font-size: var(--fs-md);
+	font-weight: var(--fw-medium);
+	border-radius: var(--radius);
+	background: transparent;
+	color: var(--danger);
+	border: 1px solid color-mix(in srgb, var(--danger) 26%, transparent);
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-soft);
+}
+
+
+.profile-action-block:hover {
+	background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+
+.profile-action-block.is-blocked {
+	background: var(--surface-sunken);
+	color: var(--text);
+	border-color: transparent;
+}
+
+
+.profile-edit-hint {
+	margin: 2px 0 0;
+	color: var(--text-muted);
+	font-size: 0.9rem;
+}
+
+
+.profile-bio-input {
+	width: 100%;
+	min-height: 96px;
+	resize: vertical;
+	padding: 12px 14px;
+	border-radius: 12px;
+	border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+	background: color-mix(in srgb, var(--bg) 70%, var(--bg-elevated));
+	color: var(--text);
+	line-height: 1.4;
+}
+
+
+.profile-bio-input:focus {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+
+.profile-flash {
+	margin: 0;
+	padding: 0 16px;
+	color: var(--accent);
+	font-size: 0.92rem;
+}
+
+
+.profile-flash-error {
+	color: #b83232;
+}
+
+
+.profile-edit-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+/* Key/value list used by the profile and the admin user detail page. */
+.profile-meta {
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--radius);
+	border: 1px solid var(--hairline);
+	overflow: hidden;
+}
+
+.profile-meta-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 11px 14px;
+	font-size: var(--fs-sm);
+}
+
+.profile-meta-row + .profile-meta-row {
+	border-top: 1px solid var(--hairline);
+}
+
+.profile-meta-label {
+	color: var(--text-muted);
+}
+
+.profile-meta-value {
+	font-weight: var(--fw-medium);
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.badge-label-title {
+	white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   Motion
+   --------------------------------------------------------------------------
+   A profile is read top to bottom, so it assembles in that order: banner,
+   then identity, then the cards. Editing controls answer the press.
+   ========================================================================== */
+
+/* ── Assembly ───────────────────────────────────────────────────────────────
+   Layered delays over the existing banner-reveal / profile-rise, so the
+   sequence reads as one movement rather than several starting at once. */
+.profile-identity {
+	animation: rise-in var(--motion-enter) 80ms var(--ease-out) both;
+}
+
+.profile-badges-card {
+	animation: rise-in var(--motion-enter) 120ms var(--ease-out) both;
+}
+
+.profile-bio-card {
+	animation: rise-in var(--motion-enter) 160ms var(--ease-out) both;
+}
+
+.profile-info-card {
+	animation: rise-in var(--motion-enter) 200ms var(--ease-out) both;
+}
+
+.profile-actions {
+	animation: rise-in var(--motion-enter) 240ms var(--ease-out) both;
+}
+
+/* Rows inside the info card fill in after it has landed. */
+.profile-info-row {
+	animation: fade-in var(--motion) both;
+}
+
+.profile-info-row:nth-child(1) {
+	animation-delay: 240ms;
+}
+.profile-info-row:nth-child(2) {
+	animation-delay: 280ms;
+}
+.profile-info-row:nth-child(n + 3) {
+	animation-delay: 320ms;
+}
+
+
+/* ── Badges ─────────────────────────────────────────────────────────────────
+   Earned marks, so they land with a spring rather than fading in. */
+.badge-mark {
+	animation: pop-in var(--motion-slow) var(--ease-bounce) backwards;
+	transition: transform var(--motion) var(--ease-spring);
+}
+
+.profile-badges .badge-mark:nth-child(2) {
+	animation-delay: 60ms;
+}
+.profile-badges .badge-mark:nth-child(3) {
+	animation-delay: 120ms;
+}
+.profile-badges .badge-mark:nth-child(n + 4) {
+	animation-delay: 180ms;
+}
+
+.badge-mark:active {
+	transform: scale(1.14);
+}
+
+.badge-label-chip {
+	animation: pop-in var(--motion) var(--ease-spring) both;
+}
+
+
+/* ── Actions ────────────────────────────────────────────────────────────────*/
+.profile-action-block,
+.profile-action-secondary,
+.profile-user-btn {
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		border-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-out);
+}
+
+.profile-action-block:active,
+.profile-action-secondary:active,
+.profile-user-btn:active {
+	transform: scale(0.97);
+}
+
+
+/* ── Editing ────────────────────────────────────────────────────────────────
+   The camera affordances sit on top of the image, so they scale rather than
+   change colour — colour would fight whatever is underneath. */
+.profile-avatar-cam,
+.profile-banner-cam,
+.profile-avatar-edit,
+.profile-banner-edit,
+.profile-remove-avatar {
+	transition:
+		transform var(--motion) var(--ease-spring),
+		background-color var(--motion) var(--ease-soft),
+		opacity var(--motion) var(--ease-soft);
+}
+
+.profile-avatar-cam:active,
+.profile-banner-cam:active,
+.profile-remove-avatar:active {
+	transform: scale(0.9);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.profile-avatar-cam:hover,
+	.profile-banner-cam:hover {
+		transform: scale(1.08);
+	}
+}
+
+.profile-avatar-preview,
+.profile-avatar-stage {
+	transition: transform var(--motion-slow) var(--ease-out);
+}
+
+/* Saving feedback should be impossible to miss but not loud. */
+.profile-flash {
+	animation: drop-in var(--motion) var(--ease-out) both;
+}
+
+.profile-flash-error {
+	animation: nudge-x var(--motion-slow) var(--ease-soft) both;
+}
+
+
+/* ==========================================================================
+   Profile colour
+   --------------------------------------------------------------------------
+   Every profile can carry its own colour — sampled from the banner, or picked
+   by its owner. $lib/profileTheme resolves it and hands the page three custom
+   properties on an inline style attribute:
+
+     --profile-accent   one hex colour
+     --profile-banner   what fills the banner while, or instead of, an image
+     --profile-wash     the fade painted behind the content
+
+   Nothing here applies without `.is-tinted`, so a profile with no colour of its
+   own renders exactly as it did before and keeps the viewer's look.
+   ========================================================================== */
+
+/*
+ * The page overrides the four accent tokens rather than restyling components:
+ * every button, link, badge and avatar ring inside a profile then picks the
+ * colour up on its own, and anything added later does too.
+ */
+.profile-page.is-tinted {
+	--accent: var(--profile-accent);
+	--accent-hover: color-mix(in srgb, var(--profile-accent) 84%, var(--text));
+	--accent-soft: color-mix(in srgb, var(--profile-accent) 22%, transparent);
+	--tint: color-mix(in srgb, var(--profile-accent) 22%, transparent);
+	--badge: var(--profile-accent);
+
+	background: var(--profile-wash) !important;
+	background-attachment: fixed !important;
+	background-size: 100% 100% !important;
+	min-height: 100vh;
+}
+
+.profile-page.is-tinted .topbar {
+	background: color-mix(in srgb, var(--profile-accent) 25%, var(--bg-surface, #181714)) !important;
+	border-bottom: 1px solid color-mix(in srgb, var(--profile-accent) 35%, transparent) !important;
+}
+
+.profile-page.is-tinted .settings-card,
+.profile-page.is-tinted .profile-card {
+	background: var(--profile-card-bg, color-mix(in srgb, var(--profile-accent) 18%, #1f1d18)) !important;
+	border: 1px solid var(--profile-card-border, color-mix(in srgb, var(--profile-accent) 35%, transparent)) !important;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.profile-page.is-tinted input,
+.profile-page.is-tinted textarea,
+.profile-page.is-tinted select {
+	background: var(--profile-input-bg, color-mix(in srgb, var(--profile-accent) 24%, #141310)) !important;
+	border-color: color-mix(in srgb, var(--profile-accent) 40%, #38342d) !important;
+}
+
+.profile-page.is-tinted input:focus,
+.profile-page.is-tinted textarea:focus {
+	border-color: var(--profile-accent) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--profile-accent) 25%, transparent) !important;
+}
+
+.profile-page.is-tinted .profile-edit-pill,
+.profile-page.is-tinted .btn-ghost {
+	background: color-mix(in srgb, var(--profile-accent) 25%, #1a1815) !important;
+	color: var(--text-primary, #ffffff) !important;
+	border: 1px solid color-mix(in srgb, var(--profile-accent) 45%, transparent) !important;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.profile-page.is-tinted .profile-edit-pill:hover,
+.profile-page.is-tinted .btn-ghost:hover {
+	background: color-mix(in srgb, var(--profile-accent) 38%, #1a1815) !important;
+	border-color: var(--profile-accent) !important;
+}
+
+.profile-page.is-tinted .profile-color-modes {
+	background: color-mix(in srgb, var(--profile-accent) 18%, #12110e) !important;
+	border: 1px solid color-mix(in srgb, var(--profile-accent) 35%, transparent) !important;
+}
+
+.profile-page.is-tinted .profile-color-mode {
+	color: color-mix(in srgb, var(--text-primary, #ffffff) 80%, var(--profile-accent)) !important;
+}
+
+.profile-page.is-tinted .profile-color-mode.active {
+	background: var(--profile-accent) !important;
+	color: #000000 !important;
+	font-weight: 700 !important;
+	box-shadow: 0 2px 10px color-mix(in srgb, var(--profile-accent) 40%, transparent) !important;
+}
+
+
+/* ── The picker ─────────────────────────────────────────────────────────────
+   Three modes, and the controls for whichever is selected. Laid out so the
+   preview is always directly above the thing that changes it. */
+
+.profile-color-modes {
+	display: flex;
+	gap: 6px;
+	padding: 4px;
+	border-radius: var(--radius-pill);
+	background: var(--surface-sunken);
+}
+
+
+.profile-color-mode {
+	flex: 1;
+	min-width: 0;
+	min-height: 38px;
+	padding: 0 10px;
+	border: none;
+	border-radius: var(--radius-pill);
+	background: transparent;
+	color: var(--text-muted);
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-medium);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition:
+		background-color var(--motion) var(--ease-soft),
+		color var(--motion) var(--ease-soft),
+		transform var(--motion-fast) var(--ease-spring),
+		box-shadow var(--motion) var(--ease-soft);
+}
+
+
+.profile-color-mode:active {
+	transform: scale(0.96);
+}
+
+
+.profile-color-mode.active {
+	background: var(--bg-elevated);
+	color: var(--text);
+	font-weight: var(--fw-semi);
+	box-shadow: var(--elev-1);
+}
+
+
+/* The live result of the current selection, at the size it will be seen. */
+.profile-color-preview {
+	position: relative;
+	height: 92px;
+	margin: 0;
+	border-radius: var(--radius);
+	overflow: hidden;
+	border: 1px solid var(--hairline);
+	background: var(--surface-sunken);
+	transition:
+		background var(--motion-slow) var(--ease-soft),
+		border-color var(--motion) var(--ease-soft);
+	animation: scale-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+.profile-color-preview.is-tinted {
+	background: var(--profile-banner);
+	border-color: color-mix(in srgb, var(--profile-accent) 40%, transparent);
+}
+
+
+.profile-color-preview-empty {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	padding: 0 16px;
+	text-align: center;
+	font-size: var(--fs-sm);
+	color: var(--text-muted);
+}
+
+
+.profile-swatches {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+}
+
+
+/*
+ * Swatches are the colour itself, so selection cannot be shown by changing
+ * their fill — it is a ring outside the circle instead.
+ */
+.profile-swatch {
+	position: relative;
+	width: 34px;
+	height: 34px;
+	border: none;
+	border-radius: 50%;
+	padding: 0;
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 12%, transparent) inset;
+	transition:
+		transform var(--motion) var(--ease-spring),
+		box-shadow var(--motion) var(--ease-soft);
+}
+
+
+.profile-swatch::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 44px;
+	height: 44px;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+}
+
+
+.profile-swatch:active {
+	transform: scale(0.88);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+	.profile-swatch:hover {
+		transform: scale(1.12);
+	}
+}
+
+
+.profile-swatch.selected {
+	transform: scale(1.06);
+	box-shadow:
+		0 0 0 2px var(--bg-elevated),
+		0 0 0 4px currentColor;
+}
+
+
+/* A native colour input, sized and shaped to sit in the same row as a swatch. */
+.profile-color-input {
+	position: relative;
+	width: 34px;
+	height: 34px;
+	flex-shrink: 0;
+	padding: 0;
+	border: 1px dashed var(--hairline-strong);
+	border-radius: 50%;
+	background: transparent;
+	overflow: hidden;
+	transition:
+		transform var(--motion) var(--ease-spring),
+		border-color var(--motion) var(--ease-soft);
+}
+
+
+.profile-color-input:active {
+	transform: scale(0.9);
+}
+
+
+.profile-color-input input {
+	position: absolute;
+	inset: -6px;
+	width: calc(100% + 12px);
+	height: calc(100% + 12px);
+	padding: 0;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+}
+
+
+.profile-color-input input::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+
+
+.profile-color-input input::-webkit-color-swatch {
+	border: none;
+	border-radius: 50%;
+}
+
+
+.profile-color-stops {
+	display: flex;
+	gap: 10px;
+}
+
+
+.profile-color-stop {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+
+.profile-color-stop-label {
+	font-size: var(--fs-xs);
+	font-weight: var(--fw-semi);
+	color: color-mix(in srgb, var(--text-muted) 85%, transparent);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+
+/* The stop's own swatch row wraps under its label rather than beside it. */
+.profile-color-stop .profile-swatches {
+	gap: 8px;
+}
+
+
+.profile-color-auto {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	font-size: var(--fs-sm);
+	color: var(--text-muted);
+	animation: fade-in var(--motion-enter) var(--ease-soft) both;
+}
+
+
+.profile-color-auto-dot {
+	width: 22px;
+	height: 22px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: var(--profile-accent, var(--accent));
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 12%, transparent) inset;
+	transition: background var(--motion-slow) var(--ease-soft);
+}
+
+
+/* Switching mode swaps one control group for another — cross-fade rather than
+   cut, since the group above it does not move. */
+.profile-color-body {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	animation: rise-in var(--motion) var(--ease-out) both;
+}
+
+/* ── Profile in motion, second pass ──────────────────────────────────────── */
+
+/*
+ * `backwards`, not `both`: the stage carries a hover/press transform of its own
+ * further up the file, and a forwards fill would keep that from ever applying.
+ */
+.profile-avatar-stage {
+	animation: pop-in var(--motion-slower) 60ms var(--ease-spring) backwards;
+}
+.profile-banner-shade {
+	animation: fade-in var(--motion-slower) var(--ease-soft) backwards;
+}
+.profile-name {
+	animation: rise-in var(--motion-enter) 100ms var(--ease-out) backwards;
+}
+.profile-status {
+	animation: fade-in var(--motion-slower) 180ms var(--ease-soft) backwards;
+}
+.profile-bio {
+	animation: fade-in var(--motion-slower) 220ms var(--ease-soft) backwards;
+}
+
+/* Copying the handle should feel like it landed. */
+.profile-user-btn.copied {
+	animation: bounce-in var(--motion) var(--ease-spring);
+}
+
+.profile-info-icon {
+	animation: pop-in var(--motion) var(--ease-spring) backwards;
+}
+.profile-meta-row {
+	--stagger: 34ms;
+	animation: rise-in var(--motion-enter) var(--ease-out) backwards;
+}
+.profile-meta-row:nth-child(2) {
+	animation-delay: var(--stagger);
+}
+.profile-meta-row:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 2);
+}
+.profile-meta-row:nth-child(n + 4) {
+	animation-delay: calc(var(--stagger) * 3);
+}
+
+.profile-edit-pill {
+	transition: background-color var(--motion) var(--ease-soft), border-color var(--motion)
+			var(--ease-soft), color var(--motion) var(--ease-soft), transform var(--motion-fast)
+			var(--ease-spring);
+}
+.profile-edit-pill:active {
+	transform: scale(0.94);
+}
+.profile-edit-hint {
+	animation: fade-in var(--motion-slower) 200ms var(--ease-soft) backwards;
+}
+
+/* Colour picker: the auto dot breathes, the chosen swatch lands with a bounce. */
+.profile-color-auto-dot {
+	animation: glow-pulse 2.4s var(--ease-soft) infinite;
+}
+/*
+ * A dedicated keyframe rather than `bounce-in`: the selected swatch rests at
+ * scale(1.06), so an animation ending at scale(1) would snap when it released.
+ */
+.profile-swatch.selected {
+	animation: swatch-pick var(--motion-slow) var(--ease-spring);
+}
+.profile-color-mode.active {
+	animation: pop-in var(--motion) var(--ease-spring);
+}
+.profile-color-stop {
+	--stagger: 40ms;
+	animation: rise-in var(--motion-enter) var(--ease-out) backwards;
+}
+.profile-color-stop:nth-child(2) {
+	animation-delay: var(--stagger);
+}

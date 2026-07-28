@@ -1,0 +1,14 @@
+<!--
+    Status-bar icon. Android renders these as a silhouette, so it is the Qix mark
+    as a solid white shape with no background — the launcher icon would come out
+    as a filled square.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M256,118c-76,0 -138,62 -138,138s62,138 138,138c28,0 54,-8 76,-23l38,38c7,7 19,7 26,0s7,-19 0,-26l-36,-36c18,-24 28,-53 28,-85 0,-76 -62,-138 -138,-138zM256,174c45,0 82,37 82,82s-37,82 -82,82 -82,-37 -82,-82 37,-82 82,-82z" />
+</vector>

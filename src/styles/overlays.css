@@ -1,0 +1,464 @@
+/* ==========================================================================
+   Floating chrome — toasts, confirm sheets, coach tips, release notes.
+   ========================================================================== */
+
+
+/* Coach tips + app flash chrome */
+.app-toast-stack {
+	position: fixed;
+	left: 50%;
+	bottom: calc(18px + var(--safe-bottom));
+	transform: translateX(-50%);
+	z-index: 80;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: min(420px, calc(100% - 24px));
+	pointer-events: none;
+}
+
+
+.app-toast {
+	pointer-events: auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 12px 14px;
+	border-radius: var(--radius);
+	background: var(--bg-elevated);
+	border: 1px solid var(--hairline-strong);
+	box-shadow: var(--elev-2);
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-medium);
+	animation: toast-in var(--motion-slow) var(--ease-out) both;
+}
+
+
+@keyframes toast-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+/* A 3px status rail is the only colour a toast needs. */
+.app-toast.ok {
+	box-shadow: inset 3px 0 0 var(--accent), var(--elev-2);
+}
+
+
+.app-toast.err {
+	box-shadow: inset 3px 0 0 var(--danger), var(--elev-2);
+	color: var(--danger);
+}
+
+
+.app-toast-x {
+	border: none;
+	background: transparent;
+	color: inherit;
+	opacity: 0.7;
+	padding: 6px;
+	min-width: 40px;
+	min-height: 40px;
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+}
+
+
+.app-confirm-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 90;
+	background: color-mix(in srgb, #000 42%, transparent);
+	display: grid;
+	align-items: end;
+	padding: 12px;
+	padding-bottom: calc(12px + var(--safe-bottom));
+	animation: coach-fade 180ms ease both;
+}
+
+
+.app-confirm-sheet {
+	width: min(480px, 100%);
+	margin: 0 auto;
+	padding: 18px 16px 14px;
+	border-radius: var(--radius-lg);
+	background: var(--bg-elevated);
+	border: 1px solid var(--hairline-strong);
+	box-shadow: var(--elev-3);
+	animation: coach-sheet var(--motion-slow) var(--ease-out) both;
+}
+
+
+.app-confirm-text {
+	margin: 0 0 16px;
+	font-size: var(--fs-md);
+	font-weight: var(--fw-medium);
+	line-height: 1.4;
+}
+
+
+.app-confirm-actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+
+
+/* ── Coach tips ─────────────────────────────────────────────────────────────
+   A quiet inline note, not a card: sunken fill, one accent rail, no border. */
+.coach-tip {
+	--coach-pad: 12px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 10px 12px 0;
+	padding: 12px 12px 12px 15px;
+	overflow: hidden;
+	isolation: isolate;
+	border-radius: var(--radius);
+	background: var(--surface-sunken);
+	z-index: 16;
+	animation: coach-in var(--motion-slow) var(--ease-out) both;
+}
+
+
+.coach-tip.soft {
+	background: var(--surface-sunken);
+}
+
+
+.coach-tip.leaving {
+	animation: coach-out var(--motion) var(--ease-soft) both;
+	pointer-events: none;
+}
+
+
+.coach-tip::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	background: var(--accent);
+}
+
+
+.coach-tip.soft::before {
+	background: var(--hairline-strong);
+}
+
+
+.coach-tip-ico {
+	flex-shrink: 0;
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	color: var(--accent);
+}
+
+
+.coach-tip.soft .coach-tip-ico {
+	color: var(--text-muted);
+}
+
+
+.coach-tip-copy {
+	flex: 1;
+	min-width: 0;
+	font-size: var(--fs-sm);
+	font-weight: var(--fw-regular);
+	letter-spacing: 0;
+	line-height: 1.4;
+	color: var(--text);
+}
+
+
+.coach-tip-copy p {
+	margin: 0;
+}
+
+
+.coach-tip-action {
+	flex-shrink: 0;
+	border: none;
+	border-radius: var(--radius-sm);
+	min-height: 34px;
+	padding: 0 12px;
+	font: inherit;
+	font-size: var(--fs-xs);
+	font-weight: var(--fw-semi);
+	color: var(--accent);
+	background: transparent;
+	cursor: pointer;
+	transition:
+		transform var(--motion-fast) var(--ease-soft),
+		background-color var(--motion) var(--ease-soft);
+}
+
+
+.coach-tip-action:hover,
+.coach-tip-action:focus-visible {
+	background: var(--tint);
+}
+
+
+.coach-tip-action:active {
+	transform: scale(0.96);
+}
+
+
+.coach-tip.list-coach {
+	margin: 8px 12px 4px;
+	flex-shrink: 0;
+}
+
+
+@keyframes coach-in {
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+
+@keyframes coach-out {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+	to {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+}
+
+
+@keyframes coach-fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+
+@keyframes coach-sheet {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+
+@media (max-width: 360px) {
+	.coach-tip {
+		flex-wrap: wrap;
+	}
+
+	.coach-tip-action {
+		width: 100%;
+	}
+}
+
+
+/* Pull-to-refresh is styled once, above — a second (absolutely positioned,
+   fixed-size) definition used to override it and clip the label. */
+
+/* What's New Modal Overlay */
+.wn-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 999;
+	display: grid;
+	place-items: center;
+	padding: 20px;
+	background: rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	animation: wn-fade 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+
+.wn-card {
+	width: min(100%, 420px);
+	max-height: min(84dvh, 580px);
+	display: flex;
+	flex-direction: column;
+	background: var(--bg-elevated);
+	border: 1px solid var(--hairline-strong);
+	border-radius: var(--radius-lg);
+	padding: 24px;
+	box-shadow: var(--elev-3);
+	animation: wn-slide var(--motion-slow) var(--ease-out) both;
+}
+
+
+.wn-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 18px;
+}
+
+
+.wn-sparkle {
+	width: 40px;
+	height: 40px;
+	border-radius: var(--radius-sm);
+	display: grid;
+	place-items: center;
+	background: var(--tint);
+	color: var(--accent);
+	flex-shrink: 0;
+}
+
+
+.wn-title {
+	margin: 0;
+	font-size: 1.2rem;
+	font-weight: var(--fw-bold);
+	letter-spacing: var(--track-tight);
+}
+
+
+.wn-list {
+	list-style: none;
+	margin: 0 0 20px;
+	padding: 0;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	flex: 1;
+}
+
+
+.wn-entry {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	font-size: 0.92rem;
+	line-height: 1.4;
+	color: var(--text);
+}
+
+
+.wn-entry-icon {
+	font-size: 1.15rem;
+	line-height: 1.2;
+	flex-shrink: 0;
+}
+
+
+.wn-dismiss {
+	width: 100%;
+	min-height: 50px;
+	border-radius: var(--radius);
+	font-weight: var(--fw-semi);
+	font-size: var(--fs-md);
+	background: var(--accent);
+	color: #ffffff;
+	border: none;
+}
+
+
+@keyframes wn-fade {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+
+@keyframes wn-slide {
+	from { opacity: 0; transform: translateY(10px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Overlays in motion, second pass ─────────────────────────────────────── */
+
+/* Toasts: the dismiss cross shrinks under the thumb. */
+.app-toast-x {
+	transition: opacity var(--motion) var(--ease-soft), transform var(--motion-fast)
+			var(--ease-spring);
+}
+.app-toast-x:active {
+	transform: scale(0.86) rotate(90deg);
+}
+
+/* Confirm sheet: the question lands, then the two answers. */
+.app-confirm-text {
+	animation: rise-in var(--motion-enter) calc(var(--stagger) * 2) var(--ease-out) backwards;
+}
+.app-confirm-actions > * {
+	animation: pop-rise var(--motion) calc(var(--stagger) * 4) var(--ease-spring) backwards;
+}
+.app-confirm-actions > *:last-child {
+	animation-delay: calc(var(--stagger) * 5);
+}
+
+/* Coach tips read as a sentence, not a block. */
+.coach-tip-copy p {
+	animation: fade-in var(--motion-slower) calc(var(--stagger) * 2) var(--ease-soft) backwards;
+}
+
+/* What's new: the header assembles, then the entries fall in one at a time. */
+.wn-sparkle {
+	animation: bounce-in var(--motion-slower) 80ms var(--ease-spring) backwards;
+}
+.wn-title {
+	animation: slide-in-left var(--motion-enter) 140ms var(--ease-out) backwards;
+}
+.wn-entry {
+	--stagger: 46ms;
+	animation: rise-in var(--motion-enter) var(--ease-out) backwards;
+}
+.wn-entry:nth-child(1) {
+	animation-delay: calc(var(--stagger) * 4);
+}
+.wn-entry:nth-child(2) {
+	animation-delay: calc(var(--stagger) * 5);
+}
+.wn-entry:nth-child(3) {
+	animation-delay: calc(var(--stagger) * 6);
+}
+.wn-entry:nth-child(4) {
+	animation-delay: calc(var(--stagger) * 7);
+}
+.wn-entry:nth-child(5) {
+	animation-delay: calc(var(--stagger) * 8);
+}
+.wn-entry:nth-child(n + 6) {
+	animation-delay: calc(var(--stagger) * 9);
+}
+.wn-entry-icon {
+	display: inline-block;
+	animation: wobble var(--motion-slower) 420ms var(--ease-spring) backwards;
+}
+.wn-dismiss {
+	animation: rise-in var(--motion-enter) 460ms var(--ease-out) backwards;
+	transition: transform var(--motion-fast) var(--ease-spring), background-color var(--motion)
+			var(--ease-soft), box-shadow var(--motion) var(--ease-soft);
+}
+.wn-dismiss:active {
+	transform: scale(0.98);
+}

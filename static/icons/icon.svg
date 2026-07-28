@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Qix">
+	<rect width="512" height="512" rx="116" fill="#1a7a6d"/>
+	<path
+		fill="#ffffff"
+		d="M256 118c-76 0-138 62-138 138s62 138 138 138c28 0 54-8 76-23l38 38c7 7 19 7 26 0s7-19 0-26l-36-36c18-24 28-53 28-85 0-76-62-138-138-138zm0 56c45 0 82 37 82 82s-37 82-82 82-82-37-82-82 37-82 82-82z"
+	/>
+	<circle cx="318" cy="318" r="28" fill="#bfe3d4"/>
+</svg>

@@ -1,0 +1,189 @@
+/* ==========================================================================
+   Document, app shell and screen containers, plus view transitions.
+   ========================================================================== */
+
+
+/* View Transitions — directional push/pop (desktop only; see lib/viewTransition.ts).
+   data-nav is stamped on <html> by the layout's onNavigate hook. */
+@supports (view-transition-name: none) {
+	::view-transition-old(root) {
+		animation: vt-out var(--motion-enter) var(--ease) both;
+	}
+	::view-transition-new(root) {
+		animation: vt-in var(--motion-enter) var(--ease) both;
+	}
+
+	:root[data-nav='back']::view-transition-old(root) {
+		animation-name: vt-out-back;
+	}
+	:root[data-nav='back']::view-transition-new(root) {
+		animation-name: vt-in-back;
+	}
+}
+
+
+@keyframes vt-out {
+	to {
+		opacity: 0;
+		transform: translateX(-3%);
+	}
+}
+
+
+@keyframes vt-in {
+	from {
+		opacity: 0;
+		transform: translateX(3%);
+	}
+}
+
+
+@keyframes vt-out-back {
+	to {
+		opacity: 0;
+		transform: translateX(3%);
+	}
+}
+
+
+@keyframes vt-in-back {
+	from {
+		opacity: 0;
+		transform: translateX(-3%);
+	}
+}
+
+
+.app-shell {
+	height: 100%;
+	height: -webkit-fill-available;
+	height: 100dvh;
+	max-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	max-width: 480px;
+	margin: 0 auto;
+	background: var(--bg-elevated);
+	position: relative;
+	overflow: hidden;
+	transition: background-color var(--motion-slow) var(--ease-soft);
+	isolation: isolate;
+}
+
+
+/* Desktop / tablet: the shell reads as a device, framed by a hairline only. */
+@media (min-width: 520px) {
+	.app-shell {
+		border-left: 1px solid var(--hairline);
+		border-right: 1px solid var(--hairline);
+	}
+}
+
+
+@media (display-mode: standalone) {
+	.app-shell {
+		max-width: none;
+		box-shadow: none;
+		height: 100%;
+		height: -webkit-fill-available;
+		height: 100dvh;
+		max-height: 100dvh;
+	}
+
+	html,
+	body {
+		height: 100%;
+		min-height: 100%;
+		min-height: -webkit-fill-available;
+		min-height: 100dvh;
+		overscroll-behavior: none;
+		background: var(--bg-elevated);
+	}
+}
+
+
+.screen {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	height: 100%;
+	max-height: 100%;
+	overflow: hidden;
+	position: relative;
+	animation: screen-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+.chats-screen {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	max-height: 100%;
+	/* Opacity-only enter — transform/filter on .screen would trap position:fixed sheets */
+	animation: chats-screen-in var(--motion-enter) var(--ease-out) both;
+}
+
+
+@keyframes chats-screen-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+
+/* Stacking context for the screen's own children. `.fab` is excluded: this
+   selector is (0,4,0) and was silently beating `.fab`'s own `position`, which
+   dropped the compose button back into normal flow. */
+.chats-screen > *:not(.menu-backdrop):not(.msg-sheet):not(.chat-menu-portal):not(.fab) {
+	position: relative;
+	z-index: 1;
+}
+
+
+.chats-screen > .menu-backdrop,
+.chats-screen > .msg-sheet,
+.chats-screen > .chat-menu-portal {
+	position: fixed;
+	z-index: 100;
+}
+
+
+.chats-screen > .msg-sheet {
+	z-index: 101;
+}
+
+
+.chats-screen .list,
+.settings-body,
+.profile-view {
+	padding-bottom: calc(16px + var(--safe-bottom));
+}
+
+
+@keyframes screen-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+
+html.sheet-open,
+html.sheet-open body {
+	overflow: hidden;
+	overscroll-behavior: none;
+}
+
+
+.chats-screen .list > .list-section-label:first-child {
+	padding-top: 10px;
+}
