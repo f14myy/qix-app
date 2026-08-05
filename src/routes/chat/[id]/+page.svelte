@@ -52,6 +52,7 @@
 	} from '$lib/sendQueue';
 	import { formatSystemLine, SYSTEM_EVENT_KEYS } from '$lib/systemMessage';
 	import { dayKey, formatDayLabel, isOnlineIso, formatLastSeen } from '$lib/time';
+	import { startViewTransition } from '$lib/viewTransition';
 	import type {
 		ChatListItem,
 		GroupInfoDTO,
@@ -186,7 +187,13 @@
 	const members = $derived(groupOverride?.members ?? data.members);
 	const isGroup = $derived(data.kind === 'group' && !!group);
 	const peerTitle = $derived(
-		data.peer?.displayName?.trim() || data.peer?.username || i18n.t('chats.title')
+		isChannel
+			? i18n.t(`channel.${data.channel!.key}.title`)
+			: isGroup
+				? group!.title
+				: data.peer
+					? data.peer.displayName?.trim() || data.peer.username
+					: ''
 	);
 	const groupTitle = $derived(group?.title || i18n.t('group.titleDefault'));
 
@@ -200,6 +207,7 @@
 		return isOnlineIso(peerSeen) ? i18n.t('chat.online') : formatLastSeen(peerSeen, i18n.locale);
 	});
 	const online = $derived(!isChannel && !isGroup && isOnlineIso(peerSeen));
+	const selectedCount = $derived(selectedIds.size);
 	const showJumpUnread = $derived(
 		!atBottom &&
 			!!firstUnreadId &&
@@ -329,11 +337,30 @@
 		const queueInterval = setInterval(() => void flushQueue(), 3000);
 		void flushQueue();
 
+		const vv = window.visualViewport;
+		const syncKeyboard = () => {
+			const kh = window.innerHeight - (vv?.height ?? window.innerHeight);
+			if (kh > 100) {
+				keyboardOpen = true;
+				viewportH = vv!.height;
+				viewportOffset = vv!.offsetTop;
+			} else {
+				keyboardOpen = false;
+				viewportH = null;
+				viewportOffset = 0;
+			}
+			if (atBottom) scrollToBottom(false);
+		};
+		vv?.addEventListener('resize', syncKeyboard);
+		vv?.addEventListener('scroll', syncKeyboard);
+
 		return () => {
 			closedByUs = true;
 			es?.close();
 			clearInterval(queueInterval);
 			clearTimeout(typingTimer);
+			vv?.removeEventListener('resize', syncKeyboard);
+			vv?.removeEventListener('scroll', syncKeyboard);
 		};
 	});
 
@@ -648,6 +675,29 @@
 		}
 	}
 
+	let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
+	async function runInChatSearch() {
+		const q = searchQ.trim();
+		if (q.length < 2) {
+			searchHits = [];
+			return;
+		}
+		searchingInChat = true;
+		try {
+			const res = await fetch(`/api/chats/${data.chatId}/media?q=${encodeURIComponent(q)}`);
+			const json = await res.json();
+			if (res.ok) searchHits = json.messages ?? [];
+		} finally {
+			searchingInChat = false;
+		}
+	}
+
+	function onSearchInput() {
+		clearTimeout(searchTimer);
+		searchTimer = setTimeout(runInChatSearch, 220);
+	}
+
 	function toggleSelect(msg: MessageDTO) {
 		const next = new Set(selectedIds);
 		if (next.has(msg.id)) next.delete(msg.id);
@@ -659,6 +709,27 @@
 	function enterSelect(msg: MessageDTO) {
 		selectMode = true;
 		selectedIds = new Set([msg.id]);
+		showMenu = false;
+	}
+
+	function exitSelect() {
+		selectMode = false;
+		selectedIds = new Set();
+	}
+
+	/**
+	 * Back doubles as "leave select mode" — the same as the site. Without this the
+	 * only way out of a selection on Android is the hardware back button, which
+	 * leaves the chat entirely.
+	 */
+	function goBack() {
+		if (selectMode) {
+			exitSelect();
+			return;
+		}
+		startViewTransition(() => {
+			navigateBack('/');
+		});
 	}
 
 	function bulkCopy() {
@@ -784,24 +855,52 @@
 	}
 </script>
 
-<div class="screen chat-screen">
-	<header class="topbar">
-		<button
-			type="button"
-			class="icon-btn"
-			aria-label={i18n.t('back')}
-			onclick={() => navigateBack('/')}
-		>
+<div
+	class="screen chat-view"
+	class:kb-open={keyboardOpen}
+	style={viewportH
+		? `padding-bottom:0;height:${viewportH}px;max-height:${viewportH}px;transform:translateY(${viewportOffset}px)`
+		: 'padding-bottom:0'}
+>
+	<header class="topbar chat-topbar">
+		<button type="button" class="icon-btn back-btn" aria-label={i18n.t('back')} onclick={goBack}>
 			<ArrowLeft size={22} />
 		</button>
 
-		{#if isChannel}
-			<div class="peer-link">
+		{#if selectMode}
+			<div class="peer-meta select-meta">
+				<h1 class="peer-title">{i18n.t('chat.selected', { n: selectedCount })}</h1>
+			</div>
+			<button type="button" class="icon-btn" aria-label={i18n.t('back')} onclick={exitSelect}>
+				<X size={20} />
+			</button>
+		{:else if isChannel}
+			<div class="peer-link channel-head">
 				<ChannelAvatar channelKey={data.channel!.key} size={36} />
 				<div class="peer-meta">
-					<h1 class="peer-title">{data.channel!.title}</h1>
-					<span class="peer-status">{statusText}</span>
+					<h1 class="peer-title">{peerTitle}</h1>
+					{#if statusText}
+						<span class="peer-status">{statusText}</span>
+					{/if}
 				</div>
+			</div>
+			<div class="topbar-actions">
+				<button
+					type="button"
+					class="icon-btn"
+					aria-label={i18n.t('chats.searchMessages')}
+					onclick={() => (showSearch = true)}
+				>
+					<Search size={20} />
+				</button>
+				<button
+					type="button"
+					class="icon-btn"
+					aria-label={i18n.t('chat.more')}
+					onclick={() => (showMenu = true)}
+				>
+					<Ellipsis size={20} />
+				</button>
 			</div>
 		{:else if isGroup}
 			<a class="peer-link" href="/chat/{data.chatId}/group">
@@ -1272,6 +1371,45 @@
 			>
 				{i18n.t('chat.keep')}
 			</button>
+		</div>
+	</div>
+{/if}
+
+{#if showSearch}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="menu-backdrop" onclick={() => (showSearch = false)}></div>
+	<div class="chat-overlay-sheet">
+		<div class="overlay-head">
+			<input
+				type="search"
+				placeholder={i18n.t('chat.searchIn')}
+				bind:value={searchQ}
+				oninput={onSearchInput}
+			/>
+			<button type="button" class="icon-btn" onclick={() => (showSearch = false)}
+				><X size={18} /></button
+			>
+		</div>
+		<div class="overlay-body">
+			{#if searchingInChat}
+				<p class="overlay-empty">{i18n.t('chats.searching')}</p>
+			{:else if searchQ.trim().length >= 2 && !searchHits.length}
+				<p class="overlay-empty">{i18n.t('chats.emptyFilter', { q: searchQ })}</p>
+			{:else}
+				{#each searchHits as hit (hit.id)}
+					<button
+						type="button"
+						class="overlay-hit"
+						onclick={() => {
+							showSearch = false;
+							jumpTo(hit.id);
+						}}
+					>
+						<span>{hit.body.slice(0, 120)}</span>
+					</button>
+				{/each}
+			{/if}
 		</div>
 	</div>
 {/if}

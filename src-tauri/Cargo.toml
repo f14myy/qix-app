@@ -36,7 +36,6 @@ tauri-plugin-haptics = "2"
 # our own Kotlin code, so the Android build needs a JNI bridge.
 [target.'cfg(target_os = "android")'.dependencies]
 jni = "0.21"
-ndk-context = "0.1"
 
 [profile.release]
 # Smaller APK / installer: the messenger is not CPU-bound, so trade compile

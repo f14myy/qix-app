@@ -33,6 +33,10 @@ class MainActivity : TauriActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        // Give the Rust notification bridge the JavaVM + ApplicationContext
+        // before any Tauri IPC command can run.
+        initNotificationBridge()
+
         // The window is what shows during the cold start, before the WebView has
         // painted anything. Left at the Material default it follows the *system*
         // theme, so a dark-themed app on a light phone flashes white — and the
@@ -168,18 +172,20 @@ class MainActivity : TauriActivity() {
             // inset on top of it would leave a dead strip under the composer.
             val bottom = if (ime > 0) 0 else (bars.bottom / density).toInt()
 
-            webView.evaluateJavascript(
-                """
-                (function(){
-                  var s = document.documentElement.style;
-                  s.setProperty('--safe-top', '${top}px');
-                  s.setProperty('--safe-bottom', '${bottom}px');
-                  s.setProperty('--safe-left', '${left}px');
-                  s.setProperty('--safe-right', '${right}px');
-                })();
-                """.trimIndent(),
-                null
-            )
+            view.post {
+                webView.evaluateJavascript(
+                    """
+                    (function(){
+                      var s = document.documentElement.style;
+                      s.setProperty('--safe-top', '${top}px');
+                      s.setProperty('--safe-bottom', '${bottom}px');
+                      s.setProperty('--safe-left', '${left}px');
+                      s.setProperty('--safe-right', '${right}px');
+                    })();
+                    """.trimIndent(),
+                    null
+                )
+            }
             insets
         }
         ViewCompat.requestApplyInsets(webView)
@@ -220,6 +226,9 @@ class MainActivity : TauriActivity() {
             REQUEST_NOTIFICATIONS
         )
     }
+
+    /** Passes the JavaVM and Application context to the Rust notification bridge. */
+    private external fun initNotificationBridge()
 
     companion object {
         const val EXTRA_HREF = "qix_href"
